@@ -1,0 +1,142 @@
+<!-- about.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <h2 class="logo">Oca ❤ Nadine</h2>
+
+        <ul class="menu">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+        </ul>
+    </nav>
+
+    <div class="about-container">
+
+        <div class="about-header">
+            <p class="status-badge"> my sweetheart❤</p>
+            <h1>Untuk pacarku, Nadine</h1>
+            <p>Unik, lucu, dan selalu bisa bikin hari jadi terasa lebih berwarna. Halaman ini dibuat lebih rapi dan manis agar kamu terlihat lebih nyaman dimata.</p>
+            <div class="action-row about-action-row">
+                <button class="link secondary" id="backToHome" type="button">Kembali ke halaman pertama</button>
+            </div>
+        </div>
+
+        <section class="about-showcase">
+            <div class="bingkai" aria-label="Foto Nadine">
+                <div class="photo-face photo-front">
+                    <img src="nadine.jpeg" class="poto" alt="Foto Nadine">
+                </div>
+                <div class="photo-face photo-back">
+                    <div class="flip-content">
+                        <p class="flip-label">My love</p>
+                        <p class="flip-message">Kamu selalu jadi warna terbaik di hari-hariku.</p>
+                        <span class="flip-heart">❤</span>
+                        <p class="flip-tip">Hover / tap untuk balik foto</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="about-copy">
+                <h2>Kenapa kamu istimewa?</h2>
+                <p>Kamu pintar, gemes, selalu bisa bikin suasana jadi menyenangkan, dan punya cara tersendiri untuk membuat hati jadi tenang.</p>
+                <ul class="about-list">
+                    <li>Selalu bikin hari terasa lebih cerah.</li>
+                    <li>Lucu, hangat, dan penuh perhatian.</li>
+                    <li>Terlihat manis tanpa harus berlebihan.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="photo-gallery">
+            <div class="gallery-header">
+                <h2>Memori Flip</h2>
+                <p>Hover di setiap foto untuk membaliknya dan melihat pesan kecil di belakangnya.</p>
+            </div>
+
+            <div class="flip-grid">
+                <div class="bingkai" aria-label="Foto Nadine 1">
+                    <div class="photo-face photo-front">
+                        <img src="nadine.jpeg" class="poto" alt="Foto Nadine 1">
+                    </div>
+                    <div class="photo-face photo-back">
+                        <div class="flip-content">
+                            <p class="flip-label">Forever</p>
+                            <p class="flip-message">Kamu adalah bagian terbaik dari hari-hari saya.</p>
+                            <span class="flip-heart">💖</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bingkai" aria-label="Foto Nadine 2">
+                    <div class="photo-face photo-front">
+                        <img src="Nadine and oca.jpeg" class="poto" alt="Foto Nadine 2">
+                    </div>
+                    <div class="photo-face photo-back">
+                        <div class="flip-content">
+                            <p class="flip-label">Sweet</p>
+                            <p class="flip-message">Setiap momen bersama kamu terasa lebih ringan.</p>
+                            <span class="flip-heart">🌸</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bingkai" aria-label="Foto Nadine 3">
+                    <div class="photo-face photo-front">
+                        <img src="nadine 1.jpeg" class="poto" alt="Foto Nadine 3">
+                    </div>
+                    <div class="photo-face photo-back">
+                        <div class="flip-content">
+                            <p class="flip-label">My Star</p>
+                            <p class="flip-message">Kamu lucu, manis, dan selalu jadi penyemangat.</p>
+                            <span class="flip-heart">✨</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        const backButton = document.getElementById('backToHome');
+
+        if (backButton) {
+            backButton.addEventListener('click', () => {
+                backButton.disabled = true;
+                backButton.classList.add('is-animating');
+
+                const rect = backButton.getBoundingClientRect();
+                const originX = rect.left + rect.width / 2;
+                const originY = rect.top + rect.height / 2;
+
+                for (let i = 0; i < 12; i++) {
+                    const heart = document.createElement('span');
+                    heart.className = 'back-heart-burst';
+                    heart.textContent = ['❤', '💖', '✨'][i % 3];
+                    heart.style.left = `${originX + (Math.random() - 0.5) * 22}px`;
+                    heart.style.top = `${originY + (Math.random() - 0.5) * 22}px`;
+                    heart.style.setProperty('--drift-x', `${(Math.random() - 0.5) * 90}px`);
+                    heart.style.setProperty('--drift-y', `${-72 - Math.random() * 36}px`);
+                    heart.style.animationDelay = `${Math.random() * 0.18}s`;
+                    document.body.appendChild(heart);
+
+                    setTimeout(() => heart.remove(), 980);
+                }
+
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 700);
+            });
+        }
+    </script>
+
+</body>
+</html>
