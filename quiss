@@ -1,0 +1,4362 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Quiz GEH – Gastroenterohepatologi</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#2563eb;--blue2:#1e40af;--blue-l:#dbeafe;
+  --green:#16a34a;--green-l:#dcfce7;
+  --red:#dc2626;--red-l:#fee2e2;
+  --amber:#d97706;--amber-l:#fef3c7;
+  --gray50:#f8fafc;--gray100:#f1f5f9;--gray200:#e2e8f0;
+  --gray400:#94a3b8;--gray600:#475569;--gray700:#334155;--gray900:#0f172a;
+  --white:#fff;
+  --r:10px;--rl:18px;--tr:.22s cubic-bezier(.4,0,.2,1);
+  --sh:0 4px 16px rgba(0,0,0,.10);--shl:0 8px 32px rgba(0,0,0,.14);
+}
+html{font-size:16px;-webkit-tap-highlight-color:transparent}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:linear-gradient(135deg,#e0f2fe 0%,#ede9fe 100%);min-height:100vh;color:var(--gray900);line-height:1.6}
+/* Screens */
+.screen{display:none;min-height:100vh;flex-direction:column}
+.screen.active{display:flex}
+/* ---- START SCREEN ---- */
+#startScreen{align-items:center;justify-content:center;padding:24px 16px}
+.start-card{background:var(--white);border-radius:var(--rl);box-shadow:var(--shl);padding:40px 32px 36px;width:100%;max-width:480px;text-align:center}
+.logo{font-size:58px;margin-bottom:8px}
+.start-card h1{font-size:2rem;font-weight:800;color:var(--blue);letter-spacing:-.5px}
+.subtitle{color:var(--gray600);font-size:.93rem;margin:4px 0 24px}
+.meta-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:24px}
+.meta-chip{background:var(--blue-l);color:var(--blue2);border-radius:100px;padding:5px 14px;font-size:.8rem;font-weight:700}
+.cfg{background:var(--gray50);border:1px solid var(--gray200);border-radius:var(--r);padding:18px 20px;margin-bottom:22px;text-align:left}
+.cfg label{display:block;font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--gray600);margin-bottom:5px;margin-top:14px}
+.cfg label:first-child{margin-top:0}
+.cfg select{width:100%;padding:9px 12px;border:1.5px solid var(--gray200);border-radius:6px;font-size:.95rem;background:var(--white);color:var(--gray900);cursor:pointer;outline:none;transition:border-color var(--tr)}
+.cfg select:focus{border-color:var(--blue)}
+.tog-row{display:flex;align-items:center;gap:12px;margin-top:4px}
+.tog{position:relative;display:inline-block;width:46px;height:26px}
+.tog input{opacity:0;width:0;height:0}
+.sl{position:absolute;inset:0;background:var(--gray200);border-radius:100px;cursor:pointer;transition:background var(--tr)}
+.sl::before{content:'';position:absolute;width:20px;height:20px;left:3px;top:3px;background:var(--white);border-radius:50%;transition:transform var(--tr);box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.tog input:checked+.sl{background:var(--blue)}
+.tog input:checked+.sl::before{transform:translateX(20px)}
+.tog-lbl{font-size:.9rem;color:var(--gray700);font-weight:600}
+/* Buttons */
+.btn-p{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--blue);color:var(--white);border:none;border-radius:8px;padding:13px 28px;font-size:1rem;font-weight:700;cursor:pointer;transition:background var(--tr),transform var(--tr),box-shadow var(--tr);box-shadow:0 2px 8px rgba(37,99,235,.30);width:100%}
+.btn-p:hover{background:var(--blue2);box-shadow:0 4px 14px rgba(37,99,235,.40)}
+.btn-p:active{transform:scale(.97)}
+.btn-s{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--white);color:var(--blue);border:2px solid var(--blue);border-radius:8px;padding:11px 24px;font-size:.95rem;font-weight:700;cursor:pointer;transition:all var(--tr)}
+.btn-s:hover{background:var(--blue-l)}
+.btn-s:active{transform:scale(.97)}
+.btn-ico{background:none;border:none;cursor:pointer;font-size:1.25rem;padding:6px 10px;border-radius:6px;color:var(--gray700);transition:background var(--tr)}
+.btn-ico:hover{background:var(--gray100)}
+/* ---- QUIZ SCREEN ---- */
+#quizScreen{background:var(--gray50)}
+.q-header{position:sticky;top:0;z-index:50;background:var(--white);border-bottom:1px solid var(--gray200);padding:10px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.h-left{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.h-right{flex-shrink:0}
+.h-center{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
+.q-title{font-size:.83rem;font-weight:700;color:var(--blue);white-space:nowrap}
+.pb-wrap{width:100%;max-width:260px;height:7px;background:var(--gray200);border-radius:100px;overflow:hidden}
+.pb-fill{height:100%;background:linear-gradient(90deg,var(--blue) 0%,#7c3aed 100%);border-radius:100px;transition:width .4s ease;width:0%}
+.prog-txt{font-size:.7rem;color:var(--gray600);font-weight:600}
+.score-badge{background:var(--green-l);color:var(--green);border-radius:100px;padding:4px 12px;font-size:.8rem;font-weight:700;white-space:nowrap}
+.q-main{flex:1;padding:20px 16px 130px;display:flex;justify-content:center}
+.q-card{background:var(--white);border-radius:var(--r);box-shadow:var(--sh);padding:28px 24px;width:100%;max-width:740px;animation:slideIn .25s ease}
+@keyframes slideIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.q-num{font-size:.73rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--blue);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.q-num::after{content:'';flex:1;height:1.5px;background:var(--blue-l);border-radius:100px}
+.q-txt{font-size:1rem;line-height:1.75;color:var(--gray900);margin-bottom:22px;font-weight:500}
+.opts{display:flex;flex-direction:column;gap:9px}
+.opt-btn{display:flex;align-items:flex-start;gap:12px;background:var(--white);border:2px solid var(--gray200);border-radius:8px;padding:12px 16px;text-align:left;cursor:pointer;font-size:.94rem;color:var(--gray900);transition:border-color var(--tr),background var(--tr),transform var(--tr);width:100%;line-height:1.55}
+.opt-btn:hover:not(:disabled){border-color:var(--blue);background:var(--blue-l);transform:translateX(3px)}
+.opt-lbl{min-width:28px;height:28px;background:var(--gray100);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:.76rem;flex-shrink:0;margin-top:1px;transition:background var(--tr),color var(--tr)}
+.opt-btn.correct{border-color:var(--green);background:var(--green-l)}
+.opt-btn.correct .opt-lbl{background:var(--green);color:var(--white)}
+.opt-btn.wrong{border-color:var(--red);background:var(--red-l)}
+.opt-btn.wrong .opt-lbl{background:var(--red);color:var(--white)}
+.opt-btn.highlight{border-color:var(--green);background:var(--green-l)}
+.opt-btn.highlight .opt-lbl{background:var(--green);color:var(--white)}
+.opt-btn:disabled{cursor:default}
+.exp-panel{margin-top:18px;border-radius:8px;padding:13px 16px;background:var(--gray50);border-left:4px solid var(--blue);animation:slideIn .25s ease}
+.exp-panel.is-ok{border-left-color:var(--green);background:var(--green-l)}
+.exp-panel.is-bad{border-left-color:var(--red);background:var(--red-l)}
+.exp-head{display:flex;align-items:center;gap:8px;margin-bottom:5px;font-size:.88rem}
+.exp-head strong{font-weight:800}
+.exp-body{font-size:.86rem;color:var(--gray700);line-height:1.6}
+/* Footer */
+.q-footer{position:fixed;bottom:0;left:0;right:0;background:var(--white);border-top:1px solid var(--gray200);padding:10px 16px;display:flex;align-items:center;gap:10px;box-shadow:0 -2px 10px rgba(0,0,0,.07);z-index:40}
+.q-footer .btn-s,.q-footer .btn-p{width:auto;min-width:90px;flex-shrink:0;padding:10px 16px;font-size:.86rem}
+.dot-nav{flex:1;display:flex;align-items:center;justify-content:center;gap:4px;overflow:hidden}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--gray200);flex-shrink:0;transition:all var(--tr);cursor:pointer}
+.dot.cur{background:var(--blue);transform:scale(1.45)}
+.dot.ok{background:var(--green)}
+.dot.bad{background:var(--red)}
+/* ---- SIDE MENU ---- */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;backdrop-filter:blur(2px)}
+.overlay.vis{display:block}
+.side{position:fixed;top:0;left:0;bottom:0;width:300px;background:var(--white);box-shadow:var(--shl);z-index:110;display:flex;flex-direction:column;transform:translateX(-100%);transition:transform var(--tr)}
+.side.open{transform:translateX(0)}
+.side-hd{display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid var(--gray200);font-weight:700;font-size:.93rem}
+.side-leg{display:flex;flex-wrap:wrap;gap:8px;padding:10px 16px;border-bottom:1px solid var(--gray200);font-size:.72rem;font-weight:700}
+.leg-ok{color:var(--green)}.leg-bad{color:var(--red)}.leg-new{color:var(--gray400)}.leg-cur{color:var(--blue)}
+.side-grid{flex:1;overflow-y:auto;padding:12px 16px;display:grid;grid-template-columns:repeat(6,1fr);gap:6px;align-content:start}
+.sn{width:38px;height:38px;border-radius:6px;font-size:.76rem;font-weight:700;border:2px solid var(--gray200);background:var(--white);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all var(--tr);color:var(--gray700)}
+.sn:hover{border-color:var(--blue);color:var(--blue)}
+.sn.cur{border-color:var(--blue);background:var(--blue);color:var(--white)}
+.sn.ok{border-color:var(--green);background:var(--green-l);color:var(--green)}
+.sn.bad{border-color:var(--red);background:var(--red-l);color:var(--red)}
+.btn-fin{margin:12px 16px 16px;background:var(--red);color:var(--white);border:none;border-radius:8px;padding:13px;font-size:.93rem;font-weight:700;cursor:pointer;transition:background var(--tr)}
+.btn-fin:hover{background:#b91c1c}
+/* ---- RESULT SCREEN ---- */
+#resultScreen{align-items:center;justify-content:center;padding:24px 16px;background:linear-gradient(135deg,#e0f2fe 0%,#ede9fe 100%)}
+.res-card{background:var(--white);border-radius:var(--rl);box-shadow:var(--shl);padding:36px 28px 32px;width:100%;max-width:460px;text-align:center}
+.trophy{font-size:62px;margin-bottom:8px;animation:bounce .65s ease}
+@keyframes bounce{0%,100%{transform:translateY(0)}40%{transform:translateY(-18px)}70%{transform:translateY(-8px)}}
+.res-card h2{font-size:1.55rem;font-weight:800;margin-bottom:6px}
+.res-sub{color:var(--gray600);margin-bottom:24px;font-size:.93rem}
+.ring-wrap{position:relative;width:148px;height:148px;margin:0 auto 24px}
+.ring-wrap svg{transform:rotate(-90deg)}
+.ring-bg{fill:none;stroke:var(--gray200);stroke-width:10}
+.ring-fg{fill:none;stroke:var(--blue);stroke-width:10;stroke-linecap:round;transition:stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1)}
+.ring-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.75rem;font-weight:900;color:var(--blue)}
+.stat-row{display:flex;gap:10px;justify-content:center;margin-bottom:24px}
+.stat-box{flex:1;border-radius:var(--r);padding:14px 8px;display:flex;flex-direction:column;align-items:center;gap:3px}
+.stat-box.ok{background:var(--green-l)}.stat-box.bad{background:var(--red-l)}.stat-box.skip{background:var(--amber-l)}
+.stat-n{font-size:1.55rem;font-weight:900}
+.stat-box.ok .stat-n{color:var(--green)}.stat-box.bad .stat-n{color:var(--red)}.stat-box.skip .stat-n{color:var(--amber)}
+.stat-l{font-size:.72rem;font-weight:700;text-transform:uppercase;color:var(--gray600)}
+.res-acts{display:flex;flex-direction:column;gap:10px}
+/* ---- REVIEW SCREEN ---- */
+#reviewScreen{background:var(--gray50)}
+.rev-hd{position:sticky;top:0;background:var(--white);border-bottom:1px solid var(--gray200);padding:12px 16px;z-index:50;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.rev-hd h2{font-size:1rem;font-weight:800;margin:6px 0;color:var(--gray900)}
+.rev-filters{display:flex;gap:6px;flex-wrap:wrap}
+.f-btn{padding:5px 14px;border-radius:100px;border:1.5px solid var(--gray200);background:var(--white);font-size:.78rem;font-weight:700;cursor:pointer;transition:all var(--tr);color:var(--gray700)}
+.f-btn.active{background:var(--blue);color:var(--white);border-color:var(--blue)}
+.rev-list{padding:16px;display:flex;flex-direction:column;gap:14px;max-width:760px;margin:0 auto;padding-bottom:40px}
+.rev-item{background:var(--white);border-radius:var(--r);box-shadow:0 1px 4px rgba(0,0,0,.07);overflow:hidden;border-left:5px solid var(--gray200)}
+.rev-item.ok{border-left-color:var(--green)}.rev-item.bad{border-left-color:var(--red)}.rev-item.skip{border-left-color:var(--amber)}
+.rev-head{display:flex;align-items:center;gap:8px;padding:12px 16px 10px;cursor:pointer;user-select:none}
+.rev-badge{font-size:.7rem;font-weight:800;border-radius:100px;padding:3px 9px;flex-shrink:0}
+.ok .rev-badge{background:var(--green-l);color:var(--green)}.bad .rev-badge{background:var(--red-l);color:var(--red)}.skip .rev-badge{background:var(--amber-l);color:var(--amber)}
+.rev-qn{font-size:.7rem;color:var(--gray400);font-weight:700;flex-shrink:0}
+.rev-qt{font-size:.86rem;color:var(--gray900);line-height:1.45;flex:1;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.rev-chev{font-size:.85rem;color:var(--gray400);transition:transform var(--tr);flex-shrink:0}
+.rev-head.open .rev-chev{transform:rotate(180deg)}
+.rev-body{padding:0 16px 14px;display:none}
+.rev-body.open{display:block;animation:slideIn .2s ease}
+.rev-full{font-size:.88rem;line-height:1.65;color:var(--gray700);margin-bottom:10px;padding-top:4px}
+.rev-opts{display:flex;flex-direction:column;gap:6px}
+.rev-opt{display:flex;align-items:flex-start;gap:8px;padding:8px 12px;border-radius:6px;font-size:.84rem;background:var(--gray50);border:1.5px solid transparent;line-height:1.5}
+.rev-opt.is-ans{background:var(--green-l);border-color:var(--green);font-weight:700}.rev-opt.is-wrong{background:var(--red-l);border-color:var(--red)}
+.rev-opt-lbl{min-width:22px;height:22px;border-radius:50%;background:var(--gray200);display:inline-flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;flex-shrink:0}
+.rev-opt.is-ans .rev-opt-lbl{background:var(--green);color:var(--white)}.rev-opt.is-wrong .rev-opt-lbl{background:var(--red);color:var(--white)}
+/* scrollbar */
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--gray100)}::-webkit-scrollbar-thumb{background:var(--gray200);border-radius:100px}
+/* responsive */
+@media(max-width:480px){
+  .start-card{padding:24px 18px 26px}
+  .start-card h1{font-size:1.6rem}
+  .q-card{padding:18px 14px}
+  .q-txt{font-size:.92rem}
+  .opt-btn{font-size:.87rem;padding:10px 12px}
+  .side{width:100%}
+  .q-footer .btn-s,.q-footer .btn-p{min-width:76px;padding:9px 10px;font-size:.8rem}
+}
+@media(min-width:768px){
+  .q-main{padding:28px 24px 130px}
+  .q-txt{font-size:1.04rem}
+}
+</style>
+</head>
+<body>
+
+<!-- START SCREEN -->
+<div id="startScreen" class="screen active">
+  <div class="start-card">
+    <div class="logo">🩺</div>
+    <h1>Quiz GEH</h1>
+    <p class="subtitle">Gastroenterohepatologi</p>
+    <div class="meta-row">
+      <span class="meta-chip" id="totalLbl">0 soal</span>
+      <span class="meta-chip">⏱ Tanpa batas waktu</span>
+      <span class="meta-chip">🎯 Pilihan ganda</span>
+    </div>
+    <div class="cfg">
+      <label for="modeSelect">Mode Quiz</label>
+      <select id="modeSelect">
+        <option value="all">Semua Soal (Acak)</option>
+        <option value="50">50 Soal Acak</option>
+        <option value="100">100 Soal Acak</option>
+        <option value="seq">Semua Soal (Berurutan)</option>
+      </select>
+      <label>Tampilkan jawaban benar setelah menjawab</label>
+      <div class="tog-row">
+        <label class="tog"><input type="checkbox" id="chkExplain" checked/><span class="sl"></span></label>
+        <span class="tog-lbl" id="explainLbl">Aktif</span>
+      </div>
+    </div>
+    <button class="btn-p" id="btnStart">▶ Mulai Quiz</button>
+  </div>
+</div>
+
+<!-- QUIZ SCREEN -->
+<div id="quizScreen" class="screen">
+  <header class="q-header">
+    <div class="h-left">
+      <button class="btn-ico" id="btnMenu" title="Navigasi">☰</button>
+      <span class="q-title">Quiz GEH</span>
+    </div>
+    <div class="h-center">
+      <div class="pb-wrap"><div class="pb-fill" id="pbFill"></div></div>
+      <span class="prog-txt" id="progTxt">1 / 1</span>
+    </div>
+    <div class="h-right">
+      <span class="score-badge">✅ <span id="scoreNum">0</span></span>
+    </div>
+  </header>
+
+  <main class="q-main">
+    <div class="q-card" id="qCard">
+      <div class="q-num" id="qNum">Soal 1</div>
+      <p class="q-txt" id="qTxt"></p>
+      <div class="opts" id="optsGrid"></div>
+      <div class="exp-panel" id="expPanel" style="display:none">
+        <div class="exp-head"><span id="expIcon"></span><strong id="expTitle"></strong></div>
+        <p class="exp-body" id="expBody"></p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="q-footer">
+    <button class="btn-s" id="btnPrev">‹ Sebelumnya</button>
+    <div class="dot-nav" id="dotNav"></div>
+    <button class="btn-p" id="btnNext">Selanjutnya ›</button>
+  </footer>
+</div>
+
+<!-- RESULT SCREEN -->
+<div id="resultScreen" class="screen">
+  <div class="res-card">
+    <div class="trophy" id="trophy">🏆</div>
+    <h2 id="resTitle">Selesai!</h2>
+    <p class="res-sub" id="resSub"></p>
+    <div class="ring-wrap">
+      <svg viewBox="0 0 120 120" width="148" height="148">
+        <circle class="ring-bg" cx="60" cy="60" r="50"/>
+        <circle class="ring-fg" id="ringFg" cx="60" cy="60" r="50"
+                stroke-dasharray="314" stroke-dashoffset="314"/>
+      </svg>
+      <div class="ring-num" id="ringNum">0%</div>
+    </div>
+    <div class="stat-row">
+      <div class="stat-box ok"><span class="stat-n" id="stOk">0</span><span class="stat-l">Benar</span></div>
+      <div class="stat-box bad"><span class="stat-n" id="stBad">0</span><span class="stat-l">Salah</span></div>
+      <div class="stat-box skip"><span class="stat-n" id="stSkip">0</span><span class="stat-l">Dilewati</span></div>
+    </div>
+    <div class="res-acts">
+      <button class="btn-p" id="btnReview">📖 Tinjau Jawaban</button>
+      <button class="btn-s" id="btnRestart">🔄 Quiz Baru</button>
+    </div>
+  </div>
+</div>
+
+<!-- REVIEW SCREEN -->
+<div id="reviewScreen" class="screen">
+  <header class="rev-hd">
+    <button class="btn-ico" id="btnBackRev">← Kembali</button>
+    <h2>Tinjau Jawaban</h2>
+    <div class="rev-filters">
+      <button class="f-btn active" data-f="all">Semua</button>
+      <button class="f-btn" data-f="ok">✅ Benar</button>
+      <button class="f-btn" data-f="bad">❌ Salah</button>
+      <button class="f-btn" data-f="skip">⏭ Dilewati</button>
+    </div>
+  </header>
+  <div class="rev-list" id="revList"></div>
+</div>
+
+<!-- OVERLAY + SIDE MENU -->
+<div class="overlay" id="overlay"></div>
+<aside class="side" id="sideMenu">
+  <div class="side-hd">
+    <span>📋 Navigasi Soal</span>
+    <button class="btn-ico" id="btnCloseMenu">✕</button>
+  </div>
+  <div class="side-leg">
+    <span class="leg-ok">■ Benar</span>
+    <span class="leg-bad">■ Salah</span>
+    <span class="leg-new">■ Belum dijawab</span>
+    <span class="leg-cur">■ Aktif</span>
+  </div>
+  <div class="side-grid" id="sideGrid"></div>
+  <button class="btn-fin" id="btnFinish">🏁 Selesai & Lihat Nilai</button>
+</aside>
+<script>
+// =================== QUESTIONS DATA ===================
+const questions = [
+  {
+    "question": "Glukokortikosteroid dapat digunakan untuk mengatasi peradangan pada IBD. Untuk mengatasi efek sampingnya dapat diganti dengan obat:",
+    "options": [
+      "Azathiopirin",
+      "Sulfasalazine",
+      "Anti TNF alpha",
+      "Monoclonal antibody",
+      "Methotrexate"
+    ],
+    "answer": "Azathiopirin"
+  },
+  {
+    "question": "Seorang laki-laki berusia 47 tahun datang ke poli RS diantar istrinya dengan keluhan benjolan di anus. Keluhan ini sudah dirasakan pasien sejak kurang lebih 1 minggu ini. Benjolan dirasa pasien keluar terlebih dahulu sebelum keluar saat BAB. Biasanya disertai darah segar yang keluar setelah feses dan terasa nyeri. Benjolan dapat masuk secara spontan. Pasien jarang makan makanan berserat dan lebih banyak duduk dalam beraktivitas sehari-hari. Apa diagnosis yang paling mungkin pada pasien?",
+    "options": [
+      "Prolapse rekti",
+      "Hemoroid grade 3-4",
+      "Hemoroid grade 1-2",
+      "Abses peri anal",
+      "Fistula peri anal"
+    ],
+    "answer": "Hemoroid grade 1-2"
+  },
+  {
+    "question": "Kontraksi otot polos saluran cerna yang menghasilkan gerakan pada sistem pencernaan disebut:",
+    "options": [
+      "Motilitas",
+      "Peristaltik",
+      "Segmentasi",
+      "Absorbsi",
+      "Reabsorbsi"
+    ],
+    "answer": "Motilitas"
+  },
+  {
+    "question": "Mensekresi HCl dan enzim untuk memulai pencernaan protein merupakan salah satu fungsi:",
+    "options": [
+      "Saliva",
+      "Lambung",
+      "Usus halus",
+      "Usus besar",
+      "Rektum"
+    ],
+    "answer": "Lambung"
+  },
+  {
+    "question": "Pada sediaan histologi jejunum, apa nama lapisan yang ditunjukkan pada nomor 1?",
+    "options": [
+      "Tunika mukosa",
+      "Tunika submukosa",
+      "Tunika muskularis",
+      "Tunika serosa",
+      "Vili"
+    ],
+    "answer": "Tunika mukosa"
+  },
+  {
+    "question": "Seorang wanita berusia 22 tahun datang berobat dengan keluhan mencret sebanyak 7 kali sejak tadi pagi. Mencret dengan air muncrat dan perut kembung. Pasien merasa tidak nyaman setelah makan di warung. Dari pemeriksaan fisik dicurigai diare yang disebabkan oleh infeksi bakteri. Apakah bakteri yang menginfeksi pasien tersebut?",
+    "options": [
+      "Escherichia coli",
+      "Shigella dysentriae",
+      "Salmonella",
+      "Herpes virus",
+      "Clostridium tetani"
+    ],
+    "answer": "Escherichia coli"
+  },
+  {
+    "question": "Seorang pasien dirawat dengan keluhan perubahan minimal dalam memori, konsentrasi, dan koordinasi. Pasien didiagnosis sirosis hati stadium dekompensasi dengan ensefalopati hepatik grade 0. Apakah nutrisi yang tepat diberikan pada pasien ini?",
+    "options": [
+      "Nutrisi enteral rehidrasi oralit",
+      "Nutrisi enteral mengandung prebiotik",
+      "Nutrisi enteral mengandung probiotik",
+      "Disakarida laktulosa (galaktosidofruktosa)",
+      "Nutrisi enteral mengandung branched chain amino acid, arginine"
+    ],
+    "answer": "Nutrisi enteral mengandung branched chain amino acid, arginine"
+  },
+  {
+    "question": "Pada proses aktif absorbsi, dengan menggunakan energi dalam bentuk ATP. Nutrisi yang menggunakan mekanisme ini adalah:",
+    "options": [
+      "Glukosa",
+      "Lemak",
+      "Air",
+      "Mineral",
+      "Vitamin"
+    ],
+    "answer": "Glukosa"
+  },
+  {
+    "question": "Seorang laki-laki berusia 30 tahun datang ke poli RS dengan keluhan nyeri saat buang air besar sejak 1 minggu terakhir. Nyeri dirasakan seperti tersayat benda tajam dan bertahan hingga 30 menit. Keluhan disertai dengan keluarnya darah segar. Kotorannya sering keras. Rasa sakit membuatnya takut bila akan BAB. Apa diagnosis yang paling mungkin?",
+    "options": [
+      "Hemoroid grade 3-4",
+      "Fistula anal",
+      "Ulkus rektal",
+      "Ulkus perianal",
+      "Fisura anus"
+    ],
+    "answer": "Fisura anus"
+  },
+  {
+    "question": "Seorang pria berusia 21 tahun dicurigai terinfeksi virus pada heparnya. Virus hepatitis yang menginfeksi ini sangat pandai merubah dirinya dengan cepat sehingga tubuh tidak dapat melawan virus dengan efektif. Apakah jenis virus yang menginfeksi pasien tersebut?",
+    "options": [
+      "HAV",
+      "HBV",
+      "HCV",
+      "HDV",
+      "HEV"
+    ],
+    "answer": "HCV"
+  },
+  {
+    "question": "Seorang perempuan berusia 35 tahun datang dengan keluhan muntah dan nyeri ulu hati selama 5 hari. Ia telah minum obat sirup antasida dari apotek, namun tidak menghilangkan muntah. Tidak tersedia obat PPI. Pengobatan yang dapat diberikan dapat berupa:",
+    "options": [
+      "Domperidone",
+      "Antasida tablet",
+      "Ranitidine",
+      "Domperidone + ranitidine",
+      "Antasida + ranitidine"
+    ],
+    "answer": "Domperidone + ranitidine"
+  },
+  {
+    "question": "Seorang laki-laki berusia 46 tahun datang ke praktek dokter dengan keluhan nyeri perut kanan atas sejak 3 bulan yang lalu. Terdapat penurunan nafsu makan, BB menurun, serta riwayat keluarga meninggal karena muntah darah dan perut membuncit. Pada pemeriksaan hepar teraba keras berbenjol, nyeri ketuk (+), bruit (+). Apakah diagnosis yang tepat pada kasus diatas?",
+    "options": [
+      "Hepatoma",
+      "Hepatitis kronis",
+      "Abses hepar",
+      "Limfoma",
+      "Fatty liver"
+    ],
+    "answer": "Hepatoma"
+  },
+  {
+    "question": "Seorang perempuan, 35 tahun datang ke poliklinik umum RS dengan keluhan nyeri ulu hati disertai rasa terbakar, sulit menelan, mual, dan muntah 2 kali. Pasien sudah berobat dan mendapat ranitidine tapi tidak mengalami perbaikan. Apa diagnosis yang paling tepat untuk kasus tersebut?",
+    "options": [
+      "Dyspepsia",
+      "GERD",
+      "Gastritis",
+      "Kolestitis",
+      "Kolelithiasis"
+    ],
+    "answer": "GERD"
+  },
+  {
+    "question": "Klinis karakteristik toksin botulinum:",
+    "options": [
+      "Miosis pupil menetap, mukosa kering, kelumpuhan otot progresif, mortalitas tinggi",
+      "Dilatasi pupil yang menetap, mukosa kering, kelumpuhan otot progresif, mortalitas tinggi",
+      "Dilatasi pupil yang reversibel, mukosa kering, kelumpuhan otot progresif, mortalitas tinggi",
+      "Dilatasi pupil menetap, hipersalivasi, kelumpuhan otot progresif, mortalitas tinggi",
+      "Dilatasi pupil yang menetap, mukosa kering, kelumpuhan otot progresif, mortalitas rendah"
+    ],
+    "answer": "Dilatasi pupil yang menetap, mukosa kering, kelumpuhan otot progresif, mortalitas tinggi"
+  },
+  {
+    "question": "Pemeriksaan yeyunum dan ileum dengan:",
+    "options": [
+      "USG",
+      "Barium swallow",
+      "Barium enema",
+      "Barium follow through",
+      "Polos abdomen"
+    ],
+    "answer": "Barium follow through"
+  },
+  {
+    "question": "Saraf yang mengatur kontraksi eksternal anal sphincter:",
+    "options": [
+      "Saraf pudendal",
+      "Saraf sakral 2-4",
+      "Saraf lumbal 5 - sakral 4",
+      "Saraf pelvik",
+      "Saraf lumbal 1 - lumbal 3"
+    ],
+    "answer": "Saraf pudendal"
+  },
+  {
+    "question": "Seorang laki-laki berusia 55 tahun dibawa ke IGD dengan keluhan mata kuning serta badan terasa letih dan lesu. Pasien memiliki riwayat GGK dan sering mendapatkan transfusi darah. HBsAg negatif, anti HCV positif. Apakah diagnosis pasien ini?",
+    "options": [
+      "Hepatitis B kronis",
+      "Hepatitis C",
+      "Kolesistitis",
+      "Kolelitiasis",
+      "Ca kaput pankreas"
+    ],
+    "answer": "Hepatitis C"
+  },
+  {
+    "question": "Seorang ibu berusia 55 tahun datang dengan keluhan nyeri ulu hati berlangsung 1 minggu, terutama malam hari. Antimuntah yang bisa digunakan adalah:",
+    "options": [
+      "Metoclopramide",
+      "Cimetidine",
+      "Metronidazole",
+      "Tetracycline",
+      "Lansoprazole"
+    ],
+    "answer": "Metoclopramide"
+  },
+  {
+    "question": "Penghubung cavum oris dan esofagus adalah:",
+    "options": [
+      "Faring",
+      "Laring",
+      "Duktus",
+      "Trakea",
+      "Lambung"
+    ],
+    "answer": "Faring"
+  },
+  {
+    "question": "Gambaran Koplik's spot yang ditemukan pada daerah mulut merupakan cermin dari penyakit:",
+    "options": [
+      "Diabetes",
+      "Tifus abdominalis",
+      "Leukemia",
+      "Defisiensi besi",
+      "Campak"
+    ],
+    "answer": "Campak"
+  },
+  {
+    "question": "Kelenjar saliva memproduksi air liur dalam satu hari sebanyak:",
+    "options": [
+      "1,3 liter",
+      "3 liter",
+      "5 liter",
+      "4 liter",
+      "10 liter"
+    ],
+    "answer": "1,3 liter"
+  },
+  {
+    "question": "Seorang wanita berusia 55 tahun datang dengan keluhan nyeri abdomen dan kotoran berdarah dengan diare. Pemeriksaan kolonoskopi menunjukkan peradangan pada beberapa tempat di kolon. Pemberian obat infliximab berfungsi sebagai:",
+    "options": [
+      "Antibiotik",
+      "Diberikan peroral",
+      "Anti TNF alpha",
+      "Antidiare",
+      "Bersifat spasmodik"
+    ],
+    "answer": "Anti TNF alpha"
+  },
+  {
+    "question": "Reabsorbsi air, garam, dan proses pemadatan kimus terjadi di:",
+    "options": [
+      "Duodenum",
+      "Jejunum",
+      "Ileum",
+      "Kolon",
+      "Rektum"
+    ],
+    "answer": "Kolon"
+  },
+  {
+    "question": "Seorang perempuan umur 39 tahun datang dengan keluhan BAB hitam seperti aspal sejak 3 hari yang lalu. Disertai nyeri ulu hati yang memberat setelah makan. Pasien mempunyai riwayat mengkonsumsi tablet diklofenak natrium dan riwayat sakit maag. Apakah diagnosis pada kasus diatas?",
+    "options": [
+      "Tukak gaster",
+      "Tukak duodenum",
+      "Varises esofagus",
+      "Gastritis",
+      "Pankreatitis"
+    ],
+    "answer": "Tukak gaster"
+  },
+  {
+    "question": "Pada pemeriksaan histopatologi dari hasil biopsi bagian antrum lambung dengan teknik pewarnaan steiner silver stain didapatkan hasil positif menunjukkan organisme:",
+    "options": [
+      "Enterotoxigenic E. coli",
+      "Salmonella typhi",
+      "Helicobacter pylori",
+      "Shigella sp",
+      "Enteroinvasive E. coli"
+    ],
+    "answer": "Helicobacter pylori"
+  },
+  {
+    "question": "Diagnostik Gall Bladder Stone efektif 90-95%:",
+    "options": [
+      "USG",
+      "Fungsi hati dan serum amilase",
+      "Cholangiogram",
+      "X-ray",
+      "CT scan"
+    ],
+    "answer": "USG"
+  },
+  {
+    "question": "Seorang wanita usia 37 tahun bekerja sebagai marketing dengan keluhan sakit bagian perut selama 8 bulan disertai diare dan kadang kesulitan BAB. Sudah dilakukan operasi usus buntu, endoskopi dan kolonoskopi dengan hasil normal. Vital sign dalam batas normal. Epigastric pain (+). Apakah tatalaksana yang tepat untuk kasus diatas?",
+    "options": [
+      "Berdasarkan gejala",
+      "Atasi infeksi",
+      "Operasi",
+      "Atasi psikosomatis",
+      "Atasi depresi"
+    ],
+    "answer": "Berdasarkan gejala"
+  },
+  {
+    "question": "Seorang laki-laki berusia 80 tahun didiagnosa karsinoma ulseratif pada kulit skrotum dekstra. Grup kelenjar manakah yang pertama kali akan menerima sel-sel metastasis dari karsinoma tersebut?",
+    "options": [
+      "Iliaka eksterna",
+      "Iliaka interna",
+      "Inguinal superfisialis",
+      "Inguinal profunda",
+      "Lumbal (paraaorta)"
+    ],
+    "answer": "Inguinal superfisialis"
+  },
+  {
+    "question": "Perubahan sel epitel mukosa lambung penderita gastritis kronis yang dapat menyebabkan terjadinya kanker lambung adalah:",
+    "options": [
+      "Intestinal atropi",
+      "Intestinal hyperplasia",
+      "Intestinal hipertropi",
+      "Intestinal metaplasia",
+      "Intestinal dysplasia"
+    ],
+    "answer": "Intestinal metaplasia"
+  },
+  {
+    "question": "Penyakit Hirschprung pada gambaran radiologi:",
+    "options": [
+      "Ada multiple air fluid level",
+      "Ada tanda pneumoperitoneum",
+      "Ada herring bone",
+      "Ada coil spring",
+      "Bagian proksimal dilatasi"
+    ],
+    "answer": "Bagian proksimal dilatasi"
+  },
+  {
+    "question": "Absorbsi lemak (asam lemak) terjadi pada:",
+    "options": [
+      "Lambung",
+      "Usus halus",
+      "Kolon descendens",
+      "Kolon sigmoid",
+      "Rektum"
+    ],
+    "answer": "Usus halus"
+  },
+  {
+    "question": "Seorang laki-laki berusia 35 tahun datang ke dokter dengan keluhan sakit perut 8 hari yang lalu, disertai mual, nafsu makan berkurang, dan pusing berputar. Dari pemeriksaan lab ditemukan gambar parasit. Penyakit yang disebabkan oleh spesies tersebut ditularkan melalui:",
+    "options": [
+      "Air",
+      "Makanan",
+      "Droplet",
+      "Tanah",
+      "Udara"
+    ],
+    "answer": "Makanan"
+  },
+  {
+    "question": "Komplikasi utama pankreatitis:",
+    "options": [
+      "Hipotensi, hipovolemik",
+      "DIC",
+      "Atelectasis, pneumonia",
+      "GI bleeding",
+      "Hipoglikemi"
+    ],
+    "answer": "Hipotensi, hipovolemik"
+  },
+  {
+    "question": "Stress atau cemas dapat menimbulkan terjadinya:",
+    "options": [
+      "Inhibisi aktivitas saluran cerna bagian bawah (SCBB)",
+      "Stimulasi aktivitas SCBB",
+      "Stimulasi fungsi motorik SCBB",
+      "Stimulasi fungsi motorik SCBA",
+      "Relaksasi sfinkter anus"
+    ],
+    "answer": "Stimulasi fungsi motorik SCBA"
+  },
+  {
+    "question": "Seorang ibu berusia 55 tahun datang dengan keluhan nyeri ulu hati berlangsung 1 minggu. Pasien dyspepsia ini dapat diterapi dengan menggunakan obat inhibitor H+, K+, ATPase yaitu:",
+    "options": [
+      "Famotidine",
+      "Lansoprazole",
+      "Metoclopramide",
+      "Domperidone",
+      "Alginate"
+    ],
+    "answer": "Lansoprazole"
+  },
+  {
+    "question": "Pengaruh peningkatan aktivitas saraf parasimpatis terhadap kelenjar saliva:",
+    "options": [
+      "Stimulasi",
+      "Inhibisi",
+      "Menurunkan kadar elektrolit saliva",
+      "Menurunkan kadar air saliva",
+      "Saliva menjadi hipoosmotik"
+    ],
+    "answer": "Stimulasi"
+  },
+  {
+    "question": "Organ pencernaan yang tidak mengalami pencernaan secara mekanik maupun kimia adalah:",
+    "options": [
+      "Mulut",
+      "Duodenum",
+      "Esofagus",
+      "Ileum",
+      "Ventrikel"
+    ],
+    "answer": "Esofagus"
+  },
+  {
+    "question": "Hasil pemeriksaan lab Tn. X dengan keluhan badan lemah dan mual-mual sudah 1 tahun adalah bilirubin (total, direk, indirek), SGPT, SGOT, ALP meningkat ringan, AFP dan CEA positif. Kemungkinan diagnosis adalah:",
+    "options": [
+      "Hepatitis kronik",
+      "Peptic ulcer",
+      "Sirosis hati",
+      "Hepatoma",
+      "GERD"
+    ],
+    "answer": "Hepatoma"
+  },
+  {
+    "question": "Penularan virus hepatitis:",
+    "options": [
+      "ABE fekal oral",
+      "ABC parenteral",
+      "ACG parenteral",
+      "AEG fekal oral",
+      "BCD fekal oral"
+    ],
+    "answer": "ABE fekal oral"
+  },
+  {
+    "question": "Apakah yang menjadi kontraindikasi nutrisi enteral?",
+    "options": [
+      "Ileus obstruktif",
+      "Anoreksia nervosa",
+      "Failure to thrive",
+      "Depresi berat",
+      "Neoplasma"
+    ],
+    "answer": "Ileus obstruktif"
+  },
+  {
+    "question": "Seorang anak perempuan berusia 6 tahun tampak lesu dan lemah sejak seminggu ini, tidak nafsu makan, tubuh kurus, dan sebelumnya batuk selama 2 minggu. Dari pemeriksaan lab ditemukan parasit. Penyakit yang disebabkan oleh spesies tersebut ditularkan melalui:",
+    "options": [
+      "Air",
+      "Makanan",
+      "Droplet",
+      "Tanah",
+      "Udara"
+    ],
+    "answer": "Tanah"
+  },
+  {
+    "question": "Tampak pada lapisan mukosa banyak ditemukan nodulus limfatikus dan lapisan submukosa sangat vaskuler. Apakah nama organ tersebut?",
+    "options": [
+      "Hepar",
+      "Gaster",
+      "Appendiks vermiformis",
+      "Esofagus",
+      "Colon"
+    ],
+    "answer": "Appendiks vermiformis"
+  },
+  {
+    "question": "Sintesis protein plasma merupakan salah satu fungsi dari:",
+    "options": [
+      "Lambung",
+      "Pankreas",
+      "Hati",
+      "Empedu",
+      "Usus halus"
+    ],
+    "answer": "Hati"
+  },
+  {
+    "question": "Enzim pencernaan yang dihasilkan oleh usus halus berasal dari:",
+    "options": [
+      "Peyer's patches",
+      "Sel chief",
+      "Sel T",
+      "Sel kripta intestin",
+      "Sel kripta brush border"
+    ],
+    "answer": "Sel kripta brush border"
+  },
+  {
+    "question": "Seorang laki-laki berusia 55 tahun dengan keluhan muntah darah dan BAB berdarah baru dialami sekitar 2 jam yang lalu. Setelah pemeriksaan awal disimpulkan pasien mengalami hipotensi menetap, hematemesis, hematoskezia. Apakah kelainan yang paling tepat pada pasien ini?",
+    "options": [
+      "Demam tifoid",
+      "Gastritis erosif",
+      "Penyakit hati kronik",
+      "Perdarahan masif akut",
+      "Perdarahan dari hemoroid eksterna"
+    ],
+    "answer": "Perdarahan masif akut"
+  },
+  {
+    "question": "Seorang perempuan umur 40 tahun datang ke puskesmas dengan keluhan nyeri mendadak sejak 3 jam yang lalu pada perut kanan atas, hilang timbul disertai mual. Keluhan sering dialami setelah memakan makanan berlemak. Organ apa yang mungkin mengalami kelainan?",
+    "options": [
+      "Gaster",
+      "Pankreas",
+      "Ren",
+      "Vesica fellea",
+      "Colon transversum"
+    ],
+    "answer": "Vesica fellea"
+  },
+  {
+    "question": "Seorang laki-laki berusia 30 tahun dibawa ke UGD RS dengan keluhan nyeri perut kanan bawah sejak 5 jam yang lalu. Diawali nyeri ulu hati. Pada abdomen ditemukan McBurney sign (+), Blumberg sign (+), Psoas sign (+). Kelainan organ manakah yang paling mungkin?",
+    "options": [
+      "Caecum",
+      "Colon sigmoideum",
+      "Rektum",
+      "Ileum",
+      "Yeyunum"
+    ],
+    "answer": "Caecum"
+  },
+  {
+    "question": "Seorang pria berusia 19 tahun datang dengan keluhan mencret. Mencret dengan konsistensi lembek sebanyak 3 kali. Feses terlihat berlendir berdarah. Dari pemeriksaan fisik dicurigai infeksi bakteri. Apakah bakteri yang menginfeksi pasien tersebut?",
+    "options": [
+      "E. coli",
+      "M. tuberculosis",
+      "S. dysentriae",
+      "C. albicans",
+      "Salmonella"
+    ],
+    "answer": "S. dysentriae"
+  },
+  {
+    "question": "Penyebab diare yang paling sering pada anak usia 6 bulan sampai 2 tahun adalah:",
+    "options": [
+      "Adenovirus",
+      "Rotavirus",
+      "Rhinovirus",
+      "Coronavirus",
+      "Parvovirus"
+    ],
+    "answer": "Rotavirus"
+  },
+  {
+    "question": "Tampak tunika mukosa tersusun oleh epitel berlapis pipih tanpa keratinisasi. Apakah nama sediaan tersebut?",
+    "options": [
+      "Esofagus",
+      "Gaster",
+      "Duodenum",
+      "Jejunum",
+      "Colon"
+    ],
+    "answer": "Esofagus"
+  },
+  {
+    "question": "Seorang laki-laki usia 25 tahun dengan keluhan BAB berdarah merah segar sejak 3 hari yang lalu disertai nyeri perut. Pasien didiagnosis dengan Chron's disease. Kebutuhan protein pada pasien diatas adalah?",
+    "options": [
+      "1 - 1,3 gr/kgBB/hari",
+      "1,3 - 1,5 gr/kgBB/hari",
+      "1,5 - 1,7 gr/kgBB/hari",
+      "1,7 - 1,9 gr/kgBB/hari",
+      "1,9 - 2,1 gr/kgBB/hari"
+    ],
+    "answer": "1,5 - 1,7 gr/kgBB/hari"
+  },
+  {
+    "question": "Seorang pria 55 tahun masuk RS dengan muntah darah dan BAB hitam sejak 1 hari yang lalu. Dijumpai adanya spider nevi di dada, asites, eritema palmaris dan ginekomastia. Apakah diagnosis pada pasien diatas?",
+    "options": [
+      "Sirosis hepatis",
+      "Hepatitis akut",
+      "Hepatitis kronik",
+      "Fatty liver",
+      "Kolelitiasis"
+    ],
+    "answer": "Sirosis hepatis"
+  },
+  {
+    "question": "Terjadinya metaplasia epitelium esofagus dari bentuk skuamus menjadi glandular akibat reflux esofagitis kronis disebut sebagai?",
+    "options": [
+      "Diverticulum esofagus",
+      "Stenosis esofagus",
+      "Barrett's esofagus",
+      "Achalasia",
+      "Varises esofagus"
+    ],
+    "answer": "Barrett's esofagus"
+  },
+  {
+    "question": "Seorang pasien laki-laki usia 40 tahun datang dengan keluhan sakit perut, kembung, diare. Dokter mendiagnosa irritable bowel syndrome. Gangguan sistem saluran cerna terjadi pada?",
+    "options": [
+      "Lambung",
+      "Duodenum",
+      "Yeyunum",
+      "Ileum",
+      "Usus besar"
+    ],
+    "answer": "Usus besar"
+  },
+  {
+    "question": "Pemekaran pembuluh darah esofagus akibat bendungan vena porta pada penyakit sirosis hati dikenal dengan?",
+    "options": [
+      "Akalasia",
+      "Hernia hiatus",
+      "Diverticulum esofagus",
+      "Varises esofagus",
+      "Stenosis esofagus"
+    ],
+    "answer": "Varises esofagus"
+  },
+  {
+    "question": "Gambaran radiologi akalasia esofagus:",
+    "options": [
+      "Dilatasi kardia esofagus",
+      "Dilatasi esofagus di proksimal",
+      "Gambaran mega esofagus",
+      "Dinding esofagus rancu",
+      "Dinding esofagus ulserasi"
+    ],
+    "answer": "Dilatasi esofagus di proksimal"
+  },
+  {
+    "question": "Seorang laki-laki berusia 24 tahun dibawa ke IGD dengan penurunan kesadaran dan riwayat kejang 4 jam yang lalu. Pasien pengguna obat-obatan terlarang. Pada pemeriksaan ekstremitas didapatkan kelumpuhan pada ekstremitas inferior. Apakah kemungkinan diagnosis pasien ini?",
+    "options": [
+      "Botulisme",
+      "Cedera otak",
+      "Cedera tulang belakang",
+      "HIV",
+      "Toxoplasmosis"
+    ],
+    "answer": "Toxoplasmosis"
+  },
+  {
+    "question": "Seorang laki-laki berusia 40 tahun datang ke puskesmas dengan keluhan nyeri di bagian anus dan perut bagian bawah. Keluhan disertai dorongan untuk BAB terus menerus, keluar lendir atau darah dari anus. Riwayat sosial: pasien mempunyai pasangan sesama jenis. Apakah diagnosis yang paling mungkin?",
+    "options": [
+      "Proktitis",
+      "Gastroenteritis",
+      "Appendisitis",
+      "Demam tifoid",
+      "Hemoroid interna"
+    ],
+    "answer": "Proktitis"
+  },
+  {
+    "question": "Seorang wanita 47 tahun dibawa ke IGD RS dengan keluhan nyeri ulu hati sejak 3 hari yang lalu. Nyeri seperti ditusuk dan hilang timbul, perut kembung dan mual. Nyeri tekan epigastrium (+). Apakah diagnosis yang paling mungkin?",
+    "options": [
+      "Hepatitis",
+      "Kolelitiasis",
+      "Gastritis",
+      "Kolestitis",
+      "Appendisitis"
+    ],
+    "answer": "Gastritis"
+  },
+  {
+    "question": "Gambaran ulkus peptikum pada foto esofagus-maag-duodenum:",
+    "options": [
+      "Filling defect",
+      "Air fluid level",
+      "Deformity",
+      "Rigidity",
+      "Additional shadow"
+    ],
+    "answer": "Deformity"
+  },
+  {
+    "question": "Seorang wanita 69 tahun datang ke IGD RS dengan keluhan benjolan pada perut kanan yang hilang timbul sejak 15 tahun yang lalu. Benjolan tidak bisa dimasukkan kembali. Finger tip test dilakukan dan teraba di medial jari. Apakah diagnosis yang tepat?",
+    "options": [
+      "Tumor abdomen",
+      "Lipoma",
+      "Hernia inguinalis",
+      "Abses inguinal",
+      "Appendisitis"
+    ],
+    "answer": "Hernia inguinalis"
+  },
+  {
+    "question": "Dugaan penyakit berikut yang memerlukan pemeriksaan kuman H. Pylori adalah:",
+    "options": [
+      "Hepatitis",
+      "Pankreatitis",
+      "Ulkus peptik (gastric ulcer)",
+      "GERD",
+      "Sirosis hati"
+    ],
+    "answer": "Ulkus peptik (gastric ulcer)"
+  },
+  {
+    "question": "Pencernaan lemak dengan enzim lipase dalam sistem pencernaan dimulai pada:",
+    "options": [
+      "Lambung",
+      "Hati",
+      "Mulut",
+      "Usus duodenum",
+      "Ileum"
+    ],
+    "answer": "Usus duodenum"
+  },
+  {
+    "question": "HCl yang dihasilkan berasal dari:",
+    "options": [
+      "Sel mucus neck",
+      "Sel chief",
+      "Sel parietal",
+      "Sel G",
+      "Sel-sel epitel brush border"
+    ],
+    "answer": "Sel parietal"
+  },
+  {
+    "question": "Seorang laki-laki 56 tahun datang dengan keluhan perut membesar, gembung dan tidak nafsu makan selama 2 minggu. Seminggu yang lalu pernah keluar darah dari mulut. Hasil pemeriksaan USG menunjukkan liver cirrhosis dan ascites. Pengobatan terhadap komplikasi perdarahan dapat diberikan:",
+    "options": [
+      "Somatostatin",
+      "Furosemide",
+      "Spironolakton",
+      "Beta bloker",
+      "Somatostatin dan beta bloker"
+    ],
+    "answer": "Somatostatin dan beta bloker"
+  },
+  {
+    "question": "Kelenjar saliva diproduksi oleh kelenjar intrinsik dan ekstrinsik. Kelenjar intrinsik saliva adalah:",
+    "options": [
+      "Parotid",
+      "Submandibular",
+      "Sublingual",
+      "Kelenjar bukal",
+      "Kelenjar amandel"
+    ],
+    "answer": "Kelenjar bukal"
+  },
+  {
+    "question": "Seorang perempuan berusia 17 tahun datang ke IGD RS dengan keluhan kram perut sejak 1 hari yang lalu. Pasien sejak kecil suka minum susu. Sebelumnya pasien minum susu sapi di kafe. Mual serta perut kembung juga dikeluhkan. Abdomen terdapat nyeri tekan. Apakah diagnosis pasien tersebut?",
+    "options": [
+      "Intoleransi laktosa",
+      "Sprue celiac",
+      "Penyakit Chron",
+      "Pankreatitis",
+      "Dyspepsia"
+    ],
+    "answer": "Intoleransi laktosa"
+  },
+  {
+    "question": "Seorang perempuan 55 tahun datang dengan keluhan rasa panas di dada, hilang timbul, selama 4 minggu. Sudah meminum cimetidine dan antasida tapi belum berkurang. Hasil pemeriksaan endoskopi menunjukkan esofagitis. Apakah obat rasional yang diresepkan?",
+    "options": [
+      "Rabeprazole",
+      "Rabeprazole + domperidone",
+      "Ranitidine",
+      "Bismuth",
+      "Ranitidine + metopramide"
+    ],
+    "answer": "Rabeprazole + domperidone"
+  },
+  {
+    "question": "Seorang anak perempuan berusia 6 tahun dibawa ke dokter dengan keluhan lesu dan lemah sejak seminggu. Tidak nafsu makan dan tubuh kurus. Sebelumnya batuk selama 2 minggu. Dari pemeriksaan lab ditemukan parasit. Apakah yang menjadi karakteristik dari spesies tersebut?",
+    "options": [
+      "Cacing betina ekor lurus, memiliki 2 spikula",
+      "Cacing betina ekor melingkar, memiliki 2 spikula",
+      "Cacing jantan ekor melingkar, memiliki cincin kopulasi",
+      "Cacing jantan ekor lurus, memiliki 2 spikula",
+      "Cacing betina ekor lurus, memiliki cincin kopulasi"
+    ],
+    "answer": "Cacing jantan ekor melingkar, memiliki cincin kopulasi"
+  },
+  {
+    "question": "Dalam tatalaksana diare kronik langkah yang harus didahulukan adalah:",
+    "options": [
+      "Pemberian antibiotik",
+      "Rehidrasi cairan",
+      "Pemberian nutrisi",
+      "Pemberian zink",
+      "Menegakkan etiologi diare"
+    ],
+    "answer": "Menegakkan etiologi diare"
+  },
+  {
+    "question": "Seorang perempuan 50 tahun datang dengan keluhan benjolan di pusar sejak melahirkan anak ke-5, 10 tahun yang lalu. Benjolan tidak dapat masuk kembali dan terasa nyeri. Finger test (-). Apakah diagnosis yang tepat?",
+    "options": [
+      "Hernia umbilikalis",
+      "Hernia inguinalis",
+      "Hernia femoralis",
+      "Hernia omentum",
+      "Hernia inkarserata"
+    ],
+    "answer": "Hernia inkarserata"
+  },
+  {
+    "question": "Perbedaan organik antara inflammatory bowel disease (IBD) dan irritable bowel syndrome (IBS):",
+    "options": [
+      "Adanya gangguan psikosomatis",
+      "Adanya gangguan infeksi",
+      "Adanya pemberian antibiotika yang berlebihan",
+      "Banyak lesi pada dinding saluran cerna",
+      "Komplikasi kanker pada saluran cerna"
+    ],
+    "answer": "Banyak lesi pada dinding saluran cerna"
+  },
+  {
+    "question": "Gambaran varises esofagus pada esofagogram:",
+    "options": [
+      "Filling defect",
+      "Kerancuan mukosa",
+      "Cobble stone",
+      "Herring bone",
+      "Air fluid level"
+    ],
+    "answer": "Filling defect"
+  },
+  {
+    "question": "Seorang laki-laki berusia 45 tahun datang ke poli RS dengan keluhan benjolan di anus sejak 1 minggu. Benjolan keluar terlebih dahulu sebelum kotoran keluar saat BAB. Disertai darah segar yang menetes setelah feses. Benjolan dapat masuk secara spontan. Apa diagnosis yang paling mungkin pada pasien?",
+    "options": [
+      "Prolapse rekti",
+      "Hemoroid grade 3-4",
+      "Hemoroid grade 1-2",
+      "Abses peri anal",
+      "Fistula peri anal"
+    ],
+    "answer": "Hemoroid grade 1-2"
+  },
+  {
+    "question": "Seorang perempuan umur 35 tahun datang dengan keluhan perut sering gembung dan makan cepat terasa penuh sudah sekitar 4 bulan. Pola BAB normal, pemeriksaan lab dan USG abdomen normal. Apakah diagnosis pada kasus diatas?",
+    "options": [
+      "Dyspepsia",
+      "Disfagia",
+      "Odynophagia",
+      "GERD",
+      "IBS"
+    ],
+    "answer": "Dyspepsia"
+  },
+  {
+    "question": "Petanda serologi virus hepatitis berikut yang menyatakan kekebalan atau imunologi terhadap infeksi virus hepatitis B adalah:",
+    "options": [
+      "HBsAg",
+      "Anti HBs",
+      "Anti HBc IgM",
+      "HBeAg",
+      "HBV DNA"
+    ],
+    "answer": "Anti HBs"
+  },
+  {
+    "question": "Seorang perempuan umur 44 tahun mengeluh sakit perut kanan atas, tanpa disertai demam. Pemeriksaan fisik: vital sign normal, perut kembung, lunak, nyeri tekan perut kanan atas. Lab: Hb 12,5 gr/dl, leukosit 8000, kolesterol 280 mg/dl. Apakah diagnosis kasus tersebut?",
+    "options": [
+      "Gastritis",
+      "Kolelitiasis",
+      "Kolesistitis",
+      "Hepatitis",
+      "Pankreatitis"
+    ],
+    "answer": "Kolelitiasis"
+  },
+  {
+    "question": "Untuk melindungi tubuh dari berbagai MO dan bakteri patogen yang masuk melalui mulut, lambung menghasilkan:",
+    "options": [
+      "Enzim pepsinogen",
+      "HCl",
+      "Lipase",
+      "B12",
+      "Intrinsic factor"
+    ],
+    "answer": "HCl"
+  },
+  {
+    "question": "Seorang bayi laki-laki berusia 5 minggu datang berobat diantar ibunya. Dikeluhkan bayi sangat rewel, badan mengurus sejak lahir, tampak perut membuncit, kulit tangan memerah-merah dan sering muntah. Ibu sebelum kehamilan pernah dirawat inap karena infeksi virus. Apakah jenis virus yang menginfeksi anak tersebut?",
+    "options": [
+      "HEV",
+      "HDV",
+      "HCV",
+      "HBV",
+      "HAV"
+    ],
+    "answer": "HBV"
+  },
+  {
+    "question": "Enzim ptyalin yang dihasilkan di kelenjar saliva memerlukan substrat:",
+    "options": [
+      "Protein",
+      "Lemak",
+      "Karbohidrat",
+      "Mineral",
+      "Vitamin"
+    ],
+    "answer": "Karbohidrat"
+  },
+  {
+    "question": "Seorang pria berusia 19 tahun datang dengan keluhan mual-mual sejak sebulan ini. Sering demam dan nyeri otot. Pada pemeriksaan fisik sklera menguning, hati membesar, nyeri tekan abdomen, limfa membesar disertai adenopati pada leher. Apakah jenis virus yang paling memungkinkan menginfeksi pasien tersebut?",
+    "options": [
+      "HAV",
+      "HBV",
+      "HCV",
+      "HDV",
+      "HEV"
+    ],
+    "answer": "HAV"
+  },
+  {
+    "question": "Seorang laki-laki usia 46 tahun datang ke puskesmas dengan keluhan nyeri ulu hati disertai gembung. Merasa penuh bila makan sedikit. Keluhan sering kambuh dan berkurang bila sering makan. Apakah diagnosis yang tepat untuk kasus diatas?",
+    "options": [
+      "Dispepsia fungsional",
+      "Dispepsia tipe ulcer",
+      "Dispepsia tipe dismotilitas",
+      "Dispepsia unspesifik",
+      "Irritable bowel syndrome"
+    ],
+    "answer": "Dispepsia tipe ulcer"
+  },
+  {
+    "question": "Stenosis pilorus hipertrofi pada gambaran radiologi:",
+    "options": [
+      "Polip di pilorus",
+      "Murphy sign",
+      "Doughnut sign",
+      "Deformity",
+      "Rigidity"
+    ],
+    "answer": "Doughnut sign"
+  },
+  {
+    "question": "Pasien laki-laki, umur 18 tahun datang ke RS dengan keluhan lemas, urin berwarna gelap, mata kuning. Dokter mendiagnosa dengan jaundice. Pasien ini mengalami gangguan pada organ:",
+    "options": [
+      "Lambung",
+      "Esofagus",
+      "Hati",
+      "Pankreas",
+      "Usus"
+    ],
+    "answer": "Hati"
+  },
+  {
+    "question": "Seorang laki-laki, usia 15 tahun datang dengan keluhan nyeri perut kanan bawah. Dokter mendiagnosa dengan appendisitis akut. Appendiks adalah usus buntu yang melekat pada:",
+    "options": [
+      "Caecum",
+      "Duodenum",
+      "Yeyunum",
+      "Ileum",
+      "Rektum"
+    ],
+    "answer": "Caecum"
+  },
+  {
+    "question": "Seorang bayi laki-laki usia 4 bulan datang ke UGD bagian anak dengan diare yang encer, tidak berdarah sejak 3 hari yang lalu. Juga mengalami muntah dan demam. Pada pemeriksaan fisik tampak lemah, rewel dan sangat haus. Mata dan fontanel cekung, kulit lambat kembali pada cubitan. BB 5 kg, TD 90/50 mmHg, detak jantung 170x/menit. Apakah yang paling mungkin?",
+    "options": [
+      "Diare akut tanpa dehidrasi",
+      "Diare akut dehidrasi ringan sedang",
+      "Diare akut dehidrasi berat",
+      "Diare akut syok hipovolemik",
+      "Diare akut syok septik"
+    ],
+    "answer": "Diare akut dehidrasi berat"
+  },
+  {
+    "question": "Seorang perempuan 50 tahun dibawa ke IGD RS dengan keluhan nyeri perut kanan atas sejak 4 jam yang lalu. Nyeri menjalar ke tulang belikat kanan. Murphys sign positif. Leukosit 14.500/mm3. Apakah kemungkinan diagnosis pada pasien ini?",
+    "options": [
+      "Kolesistitis",
+      "Gastritis",
+      "Ulkus peptikum",
+      "GERD",
+      "Angina pektoris"
+    ],
+    "answer": "Kolesistitis"
+  },
+  {
+    "question": "Seorang laki-laki berusia 40 tahun datang dengan keluhan bercak putih di bagian bawah lidah sejak 1 minggu. Bercak tidak terasa nyeri. Riwayat merokok selama 20 tahun. Pada pemeriksaan fisik ditemukan plak putih tidak bisa diangkat. Apakah diagnosis yang tepat?",
+    "options": [
+      "Ulkus apthosa",
+      "Stomatitis jamur",
+      "Karsinoma sel skuamosa",
+      "Oral trush",
+      "Leukoplakia"
+    ],
+    "answer": "Leukoplakia"
+  },
+  {
+    "question": "Seorang pasien berumur 45 tahun datang dengan keluhan tidak selera makan, mual dan muntah. Berat badan berkurang 1 kg dalam sebulan. IMT 23 kg/m2. Pasien tidak memerlukan perawatan khusus. Riwayat penyakit: kanker dan sedang dalam pengobatan. Manakah yang paling tepat diberikan bagi pasien ini?",
+    "options": [
+      "Probiotik",
+      "Parenteral nutrition",
+      "Total parenteral nutrition",
+      "Partial parenteral nutrition",
+      "Enteral nutrition formula komersial"
+    ],
+    "answer": "Enteral nutrition formula komersial"
+  },
+  {
+    "question": "Seorang wanita, usia 37 tahun bekerja sebagai marketing dengan keluhan sakit bagian perut selama 8 bulan. Sudah dilakukan operasi, endoskopi, dan kolonoskopi dengan hasil normal. Apakah diagnosis yang tepat untuk kasus diatas?",
+    "options": [
+      "Irritable bowel syndrome (IBS)",
+      "Dyspepsia tipe fungsional",
+      "Inflammatory bowel disease",
+      "Crohn's disease",
+      "Ulcerative colitis"
+    ],
+    "answer": "Irritable bowel syndrome (IBS)"
+  },
+  {
+    "question": "Seorang bayi laki-laki berusia 8 bulan dengan keluhan muntah 20 kali sehari, BAB berdarah hitam bercampur lendir, perut membesar dan keras. Pada pemeriksaan radiologi abdomen dijumpai coil spring dan tampak air fluid level. Apa diagnosa yang paling mungkin?",
+    "options": [
+      "Invaginasi",
+      "Hirschprung disease",
+      "Ileus paralitik",
+      "Enterocolitis nekrotikans",
+      "Gastroenteritis"
+    ],
+    "answer": "Invaginasi"
+  },
+  {
+    "question": "Seorang laki-laki berusia 60 tahun datang ke poli RS dengan keluhan massa yang keluar dari anus sejak 8 tahun yang lalu. Massa semakin besar dan tidak masuk setelah BAB. Pemeriksaan rektal menunjukkan massa dari anus dengan panjang 2,5 cm, permukaan merah mengkilap dan lembab. Apa diagnosa yang paling mungkin?",
+    "options": [
+      "Prolapse rekti",
+      "Hemoroid grade 3-4",
+      "Proktitis",
+      "Intususepsi",
+      "Karsinoma rekti"
+    ],
+    "answer": "Prolapse rekti"
+  },
+  {
+    "question": "Enzim gastric lipase yang dihasilkan di lambung memerlukan substrat:",
+    "options": [
+      "Protein",
+      "Karbohidrat",
+      "Vitamin",
+      "Mineral",
+      "Lemak"
+    ],
+    "answer": "Lemak"
+  },
+  {
+    "question": "Kalimat bentuk pasif adalah kalimat yang penerapan intonasi dan strukturnya pada:",
+    "options": [
+      "Sepeda balap itu dibeli oleh Andi, atau Sepeda balap itu dibeli Andi",
+      "Ibu marah kepada adik, atau Ibu memarahi adik",
+      "Dia makan roti, atau Dia memakan roti",
+      "Mobil itu jalan dengan cepat, atau Mobil itu berjalan dengan cepat",
+      "Umi menendang sepeda dengan kaki, Umi menangis tersedu-sedu"
+    ],
+    "answer": "Sepeda balap itu dibeli oleh Andi, atau Sepeda balap itu dibeli Andi"
+  },
+  {
+    "question": "Untuk mendiagnosa adanya ulkus lambung dengan foto esofagus-maag-duodenum, foto akan terlihat adanya:",
+    "options": [
+      "Additional shadow",
+      "Herring bone",
+      "Coil spring",
+      "Multiple air fluid level",
+      "Filling defect"
+    ],
+    "answer": "Additional shadow"
+  },
+  {
+    "question": "Makanan yang dicerna secara menyeluruh dicampur dengan sekresi kelenjar lambung untuk membentuk chyme. Pencampuran ini dilakukan dengan:",
+    "options": [
+      "Peristaltic wave",
+      "Mixing wave",
+      "Soft wave",
+      "Mechanical wave",
+      "Chemical wave"
+    ],
+    "answer": "Mixing wave"
+  },
+  {
+    "question": "Seorang perempuan berusia 30 tahun datang ke praktek dokter dengan rasa tidak enak pada perut bagian kiri. Pada pemeriksaan dijumpai pembesaran dari organ lien. Dimanakah proyeksi normal organ ini secara topografi anatomi?",
+    "options": [
+      "Pada latero-posterior costae 9-10 sinistra",
+      "Pada medial costae 6-12",
+      "Pada latero-posterior region iliaca sinistra",
+      "Pada anterior abdomen region epigastrium",
+      "Pada posterior costae 10-12"
+    ],
+    "answer": "Pada latero-posterior costae 9-10 sinistra"
+  },
+  {
+    "question": "Kelenjar lambung yang tidak ada pada lambung adalah:",
+    "options": [
+      "Chief cell",
+      "Goblet cell",
+      "Parietal cell",
+      "Mucous neck cell"
+    ],
+    "answer": "Goblet cell"
+  },
+  {
+    "question": "Larutan apa yang dipakai untuk pemeriksaan feses cara Kato dengan modifikasi Katz?",
+    "options": [
+      "Gentian violet",
+      "Eosin 2%",
+      "Brilliant Cresil Blue (BCB)",
+      "Metilen blue",
+      "KOH 10%"
+    ],
+    "answer": "Eosin 2%"
+  },
+  {
+    "question": "Seorang perempuan berusia 50 tahun dirujuk ke poliklinik rumah sakit dengan keluhan jaundice berat. Didiagnosa dengan kanker pankreas. Lokasi kanker pankreas tersebut yang paling mungkin berada pada bagian:",
+    "options": [
+      "Processus uncinatus",
+      "Cauda",
+      "Ductus pancreatis santorini",
+      "Caput",
+      "Corpus"
+    ],
+    "answer": "Caput"
+  },
+  {
+    "question": "Penulisan kata-kata berikut baku dan sesuai EYD adalah:",
+    "options": [
+      "Telor-iklas-murtat",
+      "Pinsil-izin-ijazah",
+      "Hipotesis-insaf-karier",
+      "Risiko-analisa-azas",
+      "Apotek-jaman-atletik"
+    ],
+    "answer": "Hipotesis-insaf-karier"
+  },
+  {
+    "question": "Seorang laki-laki berusia 12 tahun dibawa ibunya ke UGD RS dengan keluhan sakit dan bengkak pada pipi bagian bawah kiri disertai demam sejak 3 hari yang lalu. Pasien didiagnosa dengan peradangan pada kelenjar liur pada daerah pipi bagian bawah. Kelenjar liur manakah yang dimaksud?",
+    "options": [
+      "Lacrimalis gland",
+      "Parotid gland",
+      "Sublingual gland",
+      "Submandibular gland",
+      "Minor salivary gland"
+    ],
+    "answer": "Parotid gland"
+  },
+  {
+    "question": "Efek samping kolon inloop:",
+    "options": [
+      "Perforasi",
+      "Muntah",
+      "Diare",
+      "Konstipasi",
+      "Mules"
+    ],
+    "answer": "Perforasi"
+  },
+  {
+    "question": "Di bawah ini, pemakaian huruf kapital untuk petikan langsung yang benar adalah dalam kalimat:",
+    "options": [
+      "Durian runtuh itulah \"judul\" tulisan ilmiahnya",
+      "Aku bertanya padanya, \"Apa yang terjadi denganmu?\"",
+      "\"kita tidak bisa tinggal diam!\" Katanya Geram.",
+      "\"Kita Harus Pulang Hari Ini Juga!\" sahut Andi",
+      "Gadis itu menatapnya dengan tajam, \"kenapa kau tak jujur dari awal!\""
+    ],
+    "answer": "Aku bertanya padanya, \"Apa yang terjadi denganmu?\""
+  },
+  {
+    "question": "Komplikasi cholangiocarcinoma disebabkan oleh infeksi kronis dari spesies:",
+    "options": [
+      "Taenia solium",
+      "Schistosoma haematobium",
+      "Opisthorchis viverrini",
+      "Taenia saginata",
+      "Ascaris lumbricoides"
+    ],
+    "answer": "Opisthorchis viverrini"
+  },
+  {
+    "question": "Kernikterus paling berhubungan dengan:",
+    "options": [
+      "Haptoglobin",
+      "Bilirubin total",
+      "Bilirubin terkonjugasi",
+      "Hemoglobin",
+      "Bilirubin tidak terkonjugasi"
+    ],
+    "answer": "Bilirubin tidak terkonjugasi"
+  },
+  {
+    "question": "Penyebab ikterus pada defisiensi enzim G6PD:",
+    "options": [
+      "Insufisiensi",
+      "Defek konjugasi",
+      "Penurunan uptake",
+      "Peningkatan produksi",
+      "Sirkulasi enterohepatik meningkat"
+    ],
+    "answer": "Peningkatan produksi"
+  },
+  {
+    "question": "Seorang wanita 35 tahun dibawa suaminya ke IGD dengan keluhan nyeri uluhati, mual, dan muntah sejak 2 hari ini. Dari anamnesa pasien sering terlambat makan. Auskultasi dijumpai peningkatan peristaltik. Apa kemungkinan diagnosa?",
+    "options": [
+      "Pankreatitis",
+      "Gastritis",
+      "Hepatitis",
+      "Apendisitis",
+      "Batu empedu"
+    ],
+    "answer": "Gastritis"
+  },
+  {
+    "question": "Peringatan Hardiknas di sekolah dilaksanakan dengan sederhana. Kata Hardiknas tergolong bentuk yang:",
+    "options": [
+      "Akronim",
+      "Homonim",
+      "Anonim",
+      "Antonim",
+      "Singkatan"
+    ],
+    "answer": "Akronim"
+  },
+  {
+    "question": "Wanita 20 tahun mengeluh badan kuning, lemas, mual, muntah, kadar bilirubin meningkat, IgM anti HAV (-), HbsAG (+), Anti HCV (-). Penyebab kuning pada pasien tersebut:",
+    "options": [
+      "Hepatitis E virus",
+      "Hepatitis B virus",
+      "Hepatitis A virus",
+      "Hepatitis D virus",
+      "Hepatitis C virus"
+    ],
+    "answer": "Hepatitis B virus"
+  },
+  {
+    "question": "Larva yang keluar dari telur infeksius, menembus dinding usus halus dan memasuki aliran darah vena melalui vena porta hati untuk selanjutnya beredar menuju jantung. Paru-paru lalu menembus kapiler masuk ke dalam alveoli. Masa migrasi larva berlangsung sekitar 15 hari. Keadaan ini disebut:",
+    "options": [
+      "Sindrome Loeffler",
+      "Sindrome Larva Migrant",
+      "ISPA",
+      "Bronkitis",
+      "Cutaneus Larva Migrant"
+    ],
+    "answer": "Cutaneus Larva Migrant"
+  },
+  {
+    "question": "Lansoprazole dan Omeprazole adalah pilihan obat terapi kombinasi untuk infeksi Helicobacter pylori dari golongan:",
+    "options": [
+      "Agen anti muskarinik",
+      "PPI",
+      "Cabenoxolone",
+      "Antagonis reseptor H2",
+      "Sucralfate"
+    ],
+    "answer": "PPI"
+  },
+  {
+    "question": "Pria datang ke puskesmas dengan keluhan nyeri uluhati. Pasien selama ini memiliki kadar gula darah yang tinggi. Organ yang bermasalah pada pasien ini memiliki fungsi endokrin dan eksokrin. Organ yang dimaksud adalah:",
+    "options": [
+      "Lambung",
+      "Hati",
+      "Pankreas",
+      "Kantong empedu",
+      "Usus halus"
+    ],
+    "answer": "Pankreas"
+  },
+  {
+    "question": "Pria 31 tahun datang berobat ke IGD dengan keluhan demam sejak 3 hari lalu. Dicurigai pasien menderita demam tifoid. Diperlukan pemeriksaan kultur gal. Apakah spesimen yang diperlukan?",
+    "options": [
+      "Darah, apusan kulit dan feses",
+      "Urin dan feses",
+      "Darah dan urin",
+      "Darah dan feses",
+      "Darah, feses, dan urin"
+    ],
+    "answer": "Darah, feses, dan urin"
+  },
+  {
+    "question": "Penggunaan kata depan 'daripada' yang benar adalah:",
+    "options": [
+      "Daripada mati lebih baik menyerah",
+      "Hamburger terbuat daripada sayuran dan buah",
+      "Meja tulis ini terbuat daripada kayu jati",
+      "Sate Blora didatangkan dari Surabaya",
+      "Manusia hanya hidup daripada kasih Tuhan"
+    ],
+    "answer": "Daripada mati lebih baik menyerah"
+  },
+  {
+    "question": "Bayi C lahir dari ibu primigravida dengan usia kehamilan cukup bulan dan BL 2700 gram, langsung menangis. Pada hari ke-4, dijumpai bayi menjadi kuning dan semakin meluas hingga kepala dan dada. Kadar bilirubin total 7 mg/dL. Keadaan bayi sadar penuh, menangis kuat, gerakan aktif, menyusu kuat. Tatalaksana yang perlu diberikan adalah:",
+    "options": [
+      "Observasi dan hidrasi",
+      "Terapi sinar biru",
+      "Transfusi tukar",
+      "Terapi sinar kuning",
+      "Plasmapheresis"
+    ],
+    "answer": "Observasi dan hidrasi"
+  },
+  {
+    "question": "Pada proses aktif absorbsi dengan menggunakan energi dalam bentuk ATP, nutrisi yang menggunakan mekanisme ini adalah:",
+    "options": [
+      "Vitamin",
+      "Lemak",
+      "Glukosa",
+      "Mineral",
+      "Karbohidrat"
+    ],
+    "answer": "Glukosa"
+  },
+  {
+    "question": "Seorang anak cewe umur 8 bulan BB 10 kg dibawa ibunya karena muntah 24 jam. Bayi mula mengeluarkan tinja lunak dan sejak itu tidak pernah buang air besar. Bayi mengalami episode menjerit berulang dan gelisah. Suhu 39°C. Massa teraba kira-kira 2x5 cm terletak pada kuadran kanan atas. Apabila pasien bisa diinfus berapakah jumlah cairan yang diberikan?",
+    "options": [
+      "Cairan aminoleban 100cc/jam",
+      "Cairan dekstrose 5% 150 cc/jam",
+      "Cairan ringer laktat 190 cc/jam",
+      "Cairan KCl 10 cc/jam",
+      "Cairan Aminofuchsin 100 cc/jam"
+    ],
+    "answer": "Cairan ringer laktat 190 cc/jam"
+  },
+  {
+    "question": "Seorang pria 25 tahun datang dengan keluhan kesulitan defekasi karena tinja mengeras, akibat otot polos lumpuh dan gangguan refleks defekasi. Terapi yang diberikan adalah:",
+    "options": [
+      "Laksatif",
+      "Papaverine",
+      "Anti motilitas",
+      "Clidinium",
+      "Antispasmodik"
+    ],
+    "answer": "Laksatif"
+  },
+  {
+    "question": "Seorang ibu membawa anaknya berumur 7 tahun ke puskesmas. Anak menderita demam tinggi, batuk ringan dan diare tanpa muntah. Anak kelihatan kurus, pucat dan perut buncit. Pada pemeriksaan feses anak ditemukan telur cacing segmented ovum with 4 blastomers. Dugaan itu adalah telur cacing apa?",
+    "options": [
+      "Taenia saginata",
+      "Strongyloides stercoralis",
+      "Ascaris lumbricoides",
+      "Trichuris trichiura",
+      "Ancylostoma duodenale"
+    ],
+    "answer": "Ancylostoma duodenale"
+  },
+  {
+    "question": "Garam empedu adalah molekul amfipatik yang terdiri dari kepala polar dan ekor nonpolar. Ekor nonpolar memposisikan diri di sekitar lemak dengan kepala kutub di sebelah cairan berair di lumen. Struktur ini disebut:",
+    "options": [
+      "Empedu",
+      "Micelle",
+      "Asam lemak",
+      "Emulsi",
+      "Hepatosit"
+    ],
+    "answer": "Micelle"
+  },
+  {
+    "question": "Anak perempuan 3 tahun ke RS dengan keluhan muntah darah, seluruh tubuh menguning dan perut membesar. Pemeriksaan penunjang didapati HBsAG (+). Hepatosit dapat mengeluarkan gula dari darah dan menyimpannya dalam bentuk:",
+    "options": [
+      "Fruktosa",
+      "Laktosa",
+      "Glukosa",
+      "Karbohidrat",
+      "Glikogen"
+    ],
+    "answer": "Glikogen"
+  },
+  {
+    "question": "Pasien perempuan, usia 45 tahun, dibawa ke IGD dengan keluhan muntah setiap kali selesai makan. Awalnya pasien kesulitan menelan dan hanya bisa mengkonsumsi bubur cair. Pasien mengeluh nyeri di bagian dada dan penurunan berat badan dalam 1 tahun terakhir. Penatalaksanaan kasus diatas adalah?",
+    "options": [
+      "Operasi",
+      "Stop intake oral",
+      "Pasang NGT",
+      "Endoskopi",
+      "Medikamentosa PPI"
+    ],
+    "answer": "Medikamentosa PPI"
+  },
+  {
+    "question": "Seorang laki-laki berusia 22 tahun datang berobat ke IGD dengan keluhan mencret. Dari anamnesa dan pemeriksaan fisik dicurigai terjadi infeksi Escherichia coli. Berapa suhu inkubator untuk pembiakan sampel pasien tersebut?",
+    "options": [
+      "37°C",
+      "10°C",
+      "5°C",
+      "45°C",
+      "30°C-35°C"
+    ],
+    "answer": "37°C"
+  },
+  {
+    "question": "Mayoritas pencernaan trigliserida terjadi di:",
+    "options": [
+      "Lambung",
+      "Usus kecil",
+      "Kolon",
+      "Mulut",
+      "Hati"
+    ],
+    "answer": "Usus kecil"
+  },
+  {
+    "question": "Salah satu fungsi usus besar adalah untuk mensintesis zat seperti:",
+    "options": [
+      "Vitamin B12",
+      "Vitamin E",
+      "Asam lemak",
+      "Vitamin B",
+      "Bukan dari salah satu diatas"
+    ],
+    "answer": "Vitamin B12"
+  },
+  {
+    "question": "Pemeriksaan gold standar penunjang untuk alergi makanan adalah:",
+    "options": [
+      "RAST",
+      "Uji cukit kulit",
+      "DBPCFC",
+      "Radionuklir",
+      "Prick test"
+    ],
+    "answer": "DBPCFC"
+  },
+  {
+    "question": "Seorang wanita usia 45 tahun dibawa ke IGD dengan keluhan perut membuncit, mual, muntah. Dari hasil pemeriksaan dijumpai Spider nevi (+), palmar eritema (+). Dari anamnesa dijumpai riwayat Hepatitis B (+). Apakah kemungkinan diagnosisnya?",
+    "options": [
+      "Sirosis hepatitis",
+      "Gastritis",
+      "Apendisitis",
+      "Dispepsia"
+    ],
+    "answer": "Sirosis hepatitis"
+  },
+  {
+    "question": "Penyebab ikterus pada bayi prematur:",
+    "options": [
+      "Insufisiensi",
+      "Penurunan intake",
+      "Sirkulasi enterohepatik meningkat",
+      "Peningkatan produksi",
+      "Defek transport"
+    ],
+    "answer": "Sirkulasi enterohepatik meningkat"
+  },
+  {
+    "question": "Penulisan gelar akademik yang benar, terdapat pada:",
+    "options": [
+      "Dr. Marintan SH M.Hum.",
+      "dr. Serefina, S.H. M. Hum.",
+      "dr. Marzuki, SH, Mhum.",
+      "Dr. Marintan, S.H., M. Hum.",
+      "Dr. Darwis, SH. M. Hum."
+    ],
+    "answer": "Dr. Marintan, S.H., M. Hum."
+  },
+  {
+    "question": "Seorang anak perempuan umur 8 bulan berat badan 10 kg dibawa ibu karena muntah 24 jam. Massa teraba kira-kira 2x5 cm terletak pada kuadran kanan atas. Semua tes diperoleh normal atau tidak bersifat diagnostik. Sekarang anda harus melakukan:",
+    "options": [
+      "Meminta CT scan abdomen",
+      "Mengobservasi anak",
+      "Melakukan pemeriksaan barium enema",
+      "Memberikan ampisilin dan klindamisin",
+      "Melakukan eksplorasi laparotomi"
+    ],
+    "answer": "Melakukan pemeriksaan barium enema"
+  },
+  {
+    "question": "Seorang anak perempuan umur 8 bulan berat badan 10 kg dibawa ibu karena muntah 24 jam. Massa teraba kira-kira 2x5 cm terletak pada kuadran kanan atas. Tes diagnostik yang sesuai dilakukan segera meliputi hal di bawah ini KECUALI:",
+    "options": [
+      "Serum kreatinin dan nitrogen urea darah",
+      "Foto polos abdomen posisi erect",
+      "Hitung darah",
+      "Elektrolit serum",
+      "CT scan hati dan limpa"
+    ],
+    "answer": "CT scan hati dan limpa"
+  },
+  {
+    "question": "Seorang anak laki-laki berusia 13 tahun datang berobat dengan keluhan BAB berdarah. Dicurigai infeksi bakteri Shigella dysentriae. Berapa lama masa inkubasi infeksi bakteri ini?",
+    "options": [
+      "6 bulan",
+      "14 hari",
+      "7-10 hari",
+      "24 jam",
+      "1-3 hari"
+    ],
+    "answer": "1-3 hari"
+  },
+  {
+    "question": "Seorang laki 30 tahun, hasil pemeriksaan HBs Ag (+). Kakek meninggal karena sirosis. Kakak meninggal karena kanker hati. Pemeriksaan apa untuk memastikan replikasi virus?",
+    "options": [
+      "Anti HBe",
+      "Anti HBs",
+      "HBc Ag",
+      "HBe Ag",
+      "Anti HBc"
+    ],
+    "answer": "HBe Ag"
+  },
+  {
+    "question": "Seorang wanita berusia 32 tahun datang berobat dengan keluhan mencret. Defekasi encer sedikit berampas dialami lebih dari 6-7 kali dalam sehari. TD 90/60 mmHg, Nadi 86x/menit, suhu tubuh 39,1°C. Untuk mengetahui penyebab diare, apakah sampel yang paling tepat diperiksa?",
+    "options": [
+      "Air minum",
+      "Urine",
+      "Darah",
+      "Apusan anus",
+      "Tinja/feses"
+    ],
+    "answer": "Tinja/feses"
+  },
+  {
+    "question": "Obat golongan opioid agonis sintetis yang memiliki efek antidiare dengan menstimulasi reseptor mikro-opioid yang berada pada otot sirkular usus adalah:",
+    "options": [
+      "Motilium",
+      "Lactobacillus",
+      "Hyoscine",
+      "Attapulgit",
+      "Loperamid"
+    ],
+    "answer": "Loperamid"
+  },
+  {
+    "question": "Ejaan resmi di persada Nusantara/Indonesia tahun 1901, didominasi bahasa:",
+    "options": [
+      "Melayu",
+      "Belanda",
+      "China",
+      "Daerah",
+      "Indonesia"
+    ],
+    "answer": "Belanda"
+  },
+  {
+    "question": "Pasien perempuan, usia 45 tahun, dibawa ke IGD dengan keluhan muntah setiap kali habis makan. Awalnya pasien kesulitan menelan dan hanya bisa mengkonsumsi bubur cair. Pasien mengeluh nyeri di bagian dada dan penurunan berat badan dalam 1 tahun terakhir. Apakah diagnosa yang paling mungkin?",
+    "options": [
+      "Akalasia esofagus",
+      "Gastritis",
+      "Pankreatitis kronis",
+      "Pankreatitis akut",
+      "Dispepsia"
+    ],
+    "answer": "Akalasia esofagus"
+  },
+  {
+    "question": "Seorang laki-laki berusia 60 tahun dibawa ke puskesmas dengan keluhan mata kuning serta badan terasa lemah dan lesu. Pasien memiliki riwayat gagal ginjal kronis. Empat jenis sel sekretori epitel usus berkontribusi pada proses pencernaan. Tiga dari jenis sel ini menghasilkan jus usus. Salah satu dari tiga sel ini adalah:",
+    "options": [
+      "Sel enteroendokrin",
+      "Sel parietal",
+      "Sel chief",
+      "Sel G",
+      "Sel mucus leher"
+    ],
+    "answer": "Sel enteroendokrin"
+  },
+  {
+    "question": "Seorang anak laki-laki berusia 2 tahun dibawa ibunya ke dokter dengan keluhan sering buang air besar sejak 2 hari yang lalu. Pasien diberi susu formula. Ini untuk kedua kalinya pasien mengalami hal yang sama. Pada pemeriksaan tinja diperoleh konsistensi cair, berbuih, berbau asam, namun tidak berdarah dan tidak berlendir. Apakah diagnosis yang paling mungkin?",
+    "options": [
+      "Penyakit Crohn",
+      "Intoleransi makanan",
+      "Gastroenteritis",
+      "Kolitis ulseratif",
+      "Amoebiasis"
+    ],
+    "answer": "Intoleransi makanan"
+  },
+  {
+    "question": "Menelan terdiri dari tiga fase, yaitu:",
+    "options": [
+      "Fase oral, fase faring dan fase esofagus",
+      "Fase sekresi, fase laring, dan fase faring",
+      "Fase oral, fase laring, dan fase esofagus",
+      "Fase faring, fase esofagus, dan fase lambung",
+      "Fase oral, fase esofagus, dan fase lambung"
+    ],
+    "answer": "Fase oral, fase faring dan fase esofagus"
+  },
+  {
+    "question": "Seorang laki-laki usia 40 tahun dengan keluhan diare sejak beberapa jam yang lalu, sehari bisa 10x. Riwayat demam disangkal. Apakah terapi awal yang diberikan?",
+    "options": [
+      "Loperamid dosis awal 3 mg dilanjutkan 2 mg setelah BAB",
+      "Loperamid dosis awal 8 mg dilanjutkan 4 mg setelah BAB",
+      "Loperamid dosis awal 4 mg dilanjutkan 2 mg setelah BAB",
+      "Loperamid dosis awal 4 mg dilanjutkan 1 mg setelah BAB",
+      "Loperamid dosis awal 2 mg dilanjutkan 1 mg setelah BAB"
+    ],
+    "answer": "Loperamid dosis awal 4 mg dilanjutkan 2 mg setelah BAB"
+  },
+  {
+    "question": "Otot pada dinding abdomen bagian anterior yang letaknya paling dalam adalah:",
+    "options": [
+      "M. Pyramidalis",
+      "M. Obliquus abdominis externus",
+      "M. Transversus abdominalis",
+      "M. Obliquus abdominis internus",
+      "M. Rectus abdominis"
+    ],
+    "answer": "M. Transversus abdominalis"
+  },
+  {
+    "question": "Seorang laki-laki berusia 38 tahun datang ke UGD RS dengan keluhan rasa tidak enak di bagian perut. Pemeriksaan fisik dijumpai nyeri tekan pada daerah epigastrium. Setelah pemeriksaan foto rontgen abdomen tampak banyak udara pada lambung. Bagian dari organ lambung manakah yang dimaksud diatas?",
+    "options": [
+      "Cardia",
+      "Kurvatura major",
+      "Gastro-oesophageal junction",
+      "Fundus",
+      "Kurvatura minor"
+    ],
+    "answer": "Fundus"
+  },
+  {
+    "question": "Di bawah ini, pemakaian huruf kapital untuk petikan langsung yang benar adalah:",
+    "options": [
+      "\"Kita Harus Pulang Hari Ini Juga!\", sahut Andi",
+      "\"kita tidak bisa tinggal diam!\" Katanya Geram",
+      "Rocky Gerung berkata, \"kitab suci adalah mitos\"",
+      "Aku bertanya padanya, \"Apakah yang terjadi denganmu?\"",
+      "Gadis itu menatapnya dengan tajam, \"kenapa kau tak jujur dari awal!\""
+    ],
+    "answer": "Aku bertanya padanya, \"Apakah yang terjadi denganmu?\""
+  },
+  {
+    "question": "Mekanisme aksi menetralisir asam lambung untuk meningkatkan pH lambung dan duodenum, menghambat aktivitas proteolitik peptik jika pH meningkat >4. Adalah mekanisme kerja obat golongan antasida:",
+    "options": [
+      "Kalsium karbonat",
+      "Pirenzepine",
+      "Alumunium hidroksida",
+      "Manesium hidroksida",
+      "Sodium bikarbonat"
+    ],
+    "answer": "Kalsium karbonat"
+  },
+  {
+    "question": "Seorang perempuan usia 25 tahun diantar suaminya ke UGD RS dengan keluhan nyeri perut kanan bawah. Pada awalnya nyeri terasa di ulu hati. Proses dimana pepsinogen mengubah menjadi pepsin secara sendiri adalah:",
+    "options": [
+      "Autocatalytic effect",
+      "Defaecation effect",
+      "Antianabolic effect",
+      "Peristaltic effect",
+      "Gastrocolic effect"
+    ],
+    "answer": "Autocatalytic effect"
+  },
+  {
+    "question": "Pencernaan lemak dengan enzim lipase dalam sistem pencernaan, dimulai pada:",
+    "options": [
+      "Lambung",
+      "Mulut",
+      "Ileum",
+      "Hati",
+      "Usus duodenum"
+    ],
+    "answer": "Mulut"
+  },
+  {
+    "question": "Seorang anak perempuan umur 8 bulan berat badan 10 kg dibawa ibu karena muntah 24 jam. Massa teraba kira-kira 2x5 cm terletak pada kuadran kanan atas. Langkah pertama yang paling sesuai dalam penatalaksanaan pasien ini adalah:",
+    "options": [
+      "Memberikan antibiotika spektrum luas",
+      "Melakukan barium enema",
+      "Melakukan eksplorasi laparotomi",
+      "Melakukan kultur darah dan tinja",
+      "Memulai infus intra vena"
+    ],
+    "answer": "Memulai infus intra vena"
+  },
+  {
+    "question": "Agen yang melindungi mukosa yang merupakan turunan glycyrrhizic acid sintetis dengan kerja meningkatkan produksi, sekresi dan kepekatan lendir usus adalah:",
+    "options": [
+      "Bismuth koloid",
+      "Carbenoxolone",
+      "Dicitrate bismuthate",
+      "PPI",
+      "Sucralfate"
+    ],
+    "answer": "Carbenoxolone"
+  },
+  {
+    "question": "Penulisan singkatan yang benar dalam surat menyurat untuk EYD adalah:",
+    "options": [
+      "a.n. (atas nama)",
+      "Dsb. (dan sebagainya)",
+      "U.p. (untuk perhatian)",
+      "U/p (untuk perhatian)",
+      "a/n (atas nama)"
+    ],
+    "answer": "a.n. (atas nama)"
+  },
+  {
+    "question": "Seorang anak berumur 7 bulan dibawa oleh ibunya ke UGD RS dengan keluhan anak sering tiba-tiba menangis lalu berhenti sekitar 10 menit disertai muntah dan BAB ada darah lendir. Pemeriksaan USG didapatkan gambaran doughnut sign (+). Apakah diagnosis?",
+    "options": [
+      "Ileus paralitik",
+      "Intususepsi",
+      "Hirschprung disease",
+      "Atresia jejunum",
+      "Kolik renal"
+    ],
+    "answer": "Intususepsi"
+  },
+  {
+    "question": "Seorang laki-laki berusia 45 tahun datang ke puskesmas dengan keluhan nyeri pada ulu hati. Sebagian besar pencernaan kimiawi makromolekul dan penyerapan nutrisi, air, dan elektrolit terjadi di dalam:",
+    "options": [
+      "Lambung",
+      "Usus kecil",
+      "Usus besar",
+      "Esofagus",
+      "Pankreas"
+    ],
+    "answer": "Usus kecil"
+  },
+  {
+    "question": "Seorang pria 20 tahun mengeluh BAK warna kuning sejak 2 hari. Pada pemeriksaan fisik sklera ikterik dan kulit warna kuning. Pemeriksaan lanjutan apa yang diusulkan?",
+    "options": [
+      "Asam urat",
+      "Kolesterol total dan LDL",
+      "SGOT/SGPT",
+      "Lipase dan amilase",
+      "Ureum/kreatinin"
+    ],
+    "answer": "SGOT/SGPT"
+  },
+  {
+    "question": "Obat-obatan yang menghambat efek asetilkolin yang dilepaskan pada ujung post ganglion serabut saraf parasimpatis dan efek relaks sebagai respon terhadap neurotransmitter adalah mekanisme kerja obat:",
+    "options": [
+      "Lactulac",
+      "Laksatif",
+      "Loperamid",
+      "Antispasmodik",
+      "Anti motilitas"
+    ],
+    "answer": "Antispasmodik"
+  },
+  {
+    "question": "Managemen overdosis loperamid adalah dengan suportif care dan pemberian antidot. Antidot yang diberikan merupakan antagonis reseptor opioid. Contoh obatnya:",
+    "options": [
+      "Amidarone",
+      "Naloxone HCL",
+      "Digoxin",
+      "Verapamil",
+      "Diltiazem"
+    ],
+    "answer": "Naloxone HCL"
+  },
+  {
+    "question": "Untuk mendiagnose adanya perforasi usus dengan foto abdomen posisi:",
+    "options": [
+      "LLD",
+      "Lateral",
+      "Erect",
+      "Supine",
+      "Oblik"
+    ],
+    "answer": "Erect"
+  },
+  {
+    "question": "Kalimat efektif harus memiliki keparalelan bentuk. Hal ini terdapat pada kalimat:",
+    "options": [
+      "Kantor menyediakan alat-alat tulis: pensil, pulpen, tip ex, dll.",
+      "Ayah membaca koran di beranda, ibu memasak di dapur",
+      "Dosen itu lebih muda daripada mahasiswanya",
+      "\"Pergi!\" Teriak Ibu Andi, histeris",
+      "Tadi malam Nurajijah tidak membyar durian yang dimakannya"
+    ],
+    "answer": "Kantor menyediakan alat-alat tulis: pensil, pulpen, tip ex, dll."
+  },
+  {
+    "question": "Pada masa janin ada bagian pembuluh darah pada tali pusat yang berlanjut memasuki hepar dan menuju jantung (ductus venosus aranti). Setelah lahir, maka pembuluh darah tersebut mengalami obliterasi dan menjadi:",
+    "options": [
+      "Porta hepatis",
+      "Ductus hepaticus",
+      "Ligamentum falciform hepatis",
+      "Ligamentum teres hepatis",
+      "Ligamentum coronarium hepatis"
+    ],
+    "answer": "Ligamentum teres hepatis"
+  },
+  {
+    "question": "Seorang perempuan berusia 45 tahun datang ke UGD RS dengan keluhan sakit dan ada benjolan pada daerah lipat paha. Pada pemeriksaan dijumpai adanya benjolan pada canalis inguinalis. Apakah isi benjolan yang mungkin pada daerah tersebut?",
+    "options": [
+      "Ligamentum laterale",
+      "Ligamentum suspensorium",
+      "Ligamentum ovary propii",
+      "Ligamentum latum",
+      "Ligamentum teres uteri"
+    ],
+    "answer": "Ligamentum teres uteri"
+  },
+  {
+    "question": "Ikterus yang berkembang cepat setelah usia 48 jam, kemungkinan diagnosis adalah:",
+    "options": [
+      "Staphylococcal skin scalded",
+      "Inkompatibilitas ABO",
+      "Sepsis",
+      "Inkompatibilitas rhesus",
+      "Spherositosis"
+    ],
+    "answer": "Inkompatibilitas ABO"
+  },
+  {
+    "question": "Seorang ibu membawa anaknya yang berumur 7 tahun ke Puskesmas. Anak menderita demam tinggi, batuk-batuk ringan dan diare tanpa muntah. Anak kelihatan kurus, pucat dan perut buncit. T 38°C, RR 20x/i. Apa diagnosa anak tersebut?",
+    "options": [
+      "Demam tifoid",
+      "Gangguan gizi berat",
+      "Gangguan pencernaan berat",
+      "Demam dengue",
+      "Kecacingan"
+    ],
+    "answer": "Kecacingan"
+  },
+  {
+    "question": "Seorang bayi laki-laki usia 2 hari mengalami kuning seluruh tubuh 30 jam setelah lahir. Saat ini bayi mengonsumsi ASI. Bilirubin total 15.5. Rencana penatalaksanaan yang sesuai adalah:",
+    "options": [
+      "Observasi 1x24 jam",
+      "Transfusi tukar",
+      "Fototerapi",
+      "Pemberian cairan Dextrose 5%",
+      "Ganti ASI dengan susu formula"
+    ],
+    "answer": "Fototerapi"
+  },
+  {
+    "question": "Seorang wanita berusia 35 tahun dibawa suaminya ke IGD RS dengan keluhan nyeri uluhati, mual dan muntah. Dari anamnesa dijumpai pasien sering terlambat makan. Apakah terapi yang tepat untuk pasien tersebut?",
+    "options": [
+      "Deksametasone",
+      "Kortikosteroid",
+      "Pilihan PPI, Antasida",
+      "Methylprednisolon",
+      "Antibiotik"
+    ],
+    "answer": "Pilihan PPI, Antasida"
+  },
+  {
+    "question": "Kelenjar saliva memproduksi air liur dalam 1 hari sebanyak:",
+    "options": [
+      "10 L",
+      "1,5 L",
+      "3 L",
+      "5 L",
+      "4 L"
+    ],
+    "answer": "1,5 L"
+  },
+  {
+    "question": "Perbedaan breast milk jaundice dengan breast feeding jaundice:",
+    "options": [
+      "Breast milk jaundice merupakan abnormalitas",
+      "Breast milk jaundice terjadi karena intake berkurang",
+      "Breast feeding jaundice terjadi karena intake berlebihan",
+      "Keduanya merupakan fisiologis",
+      "Breast feeding jaundice merupakan abnormalitas"
+    ],
+    "answer": "Breast milk jaundice merupakan abnormalitas"
+  },
+  {
+    "question": "Gambaran foto barium enema pada karsinoma kolon tampak:",
+    "options": [
+      "Coil spring",
+      "Additional shadow",
+      "Herring bone",
+      "Multiple air fluid level",
+      "Apple core"
+    ],
+    "answer": "Apple core"
+  },
+  {
+    "question": "Seorang bayi dibawa ibunya ke UGD rumah sakit karena adanya benjolan pada bagian perut sejak beberapa jam yang lalu. Pada pemeriksaan diketahui adanya invaginasi pada bagian usus yang bisa menghambat aliran dari arteri mesenterika superior. Apakah yang merupakan cabang dari arteri ini?",
+    "options": [
+      "A. Colica sinistra",
+      "A. Ileocolica",
+      "A. Gastrica sinistra",
+      "A. Sigmoidea",
+      "A. Linealis"
+    ],
+    "answer": "A. Ileocolica"
+  },
+  {
+    "question": "Seorang bayi laki-laki dibawa oleh ibunya ke IGD dengan keluhan diare sebanyak 6 kali sehari. Tinja berwarna kuning, ampas sedikit, berbau asam, lendir (-), darah (-). 2 hari sebelumnya pasien minum susu formula karena ASI tidak cukup. Apakah yang terjadi pada anak ini?",
+    "options": [
+      "Intoleransi laktosa",
+      "Alergi susu sapi",
+      "Malabsorpsi lemak",
+      "Infeksi rotavirus",
+      "Infeksi bakteri"
+    ],
+    "answer": "Intoleransi laktosa"
+  },
+  {
+    "question": "Yang bukan merupakan fungsi HCl adalah:",
+    "options": [
+      "Memecah jaringan ikat dan dinding sel tumbuhan, membantu mencairkan makanan dan membentuk chyme",
+      "Mengaktifkan enzim pepsin dan lipase lingual",
+      "Mengubah ion besi yang tertelan (Fe3+) menjadi ion besi (Fe2+)",
+      "Emulsifikasi lemak",
+      "Berkontribusi pada kekebalan bawaan dengan menghancurkan sebagian besar patogen yang tertelan"
+    ],
+    "answer": "Emulsifikasi lemak"
+  },
+  {
+    "question": "Fungsi dari hati adalah:",
+    "options": [
+      "Memproduksi empedu",
+      "Menyimpan empedu",
+      "Mengemulsifikasi lemak",
+      "Mencerna lemak",
+      "Mengaktifkan pepsinogen"
+    ],
+    "answer": "Memproduksi empedu"
+  },
+  {
+    "question": "Seorang laki-laki usia 30 tahun datang ke puskesmas dengan keluhan diare. Diare dialami 6 jam setelah konsumsi seafood. Pasien mengeluh nyeri ulu hati dan ditemukan urtikaria diseluruh tubuh. Dokter mendiagnosis gastroenteritis akut karena alergi. Apakah obat yang tepat?",
+    "options": [
+      "Penghambat pompa proton",
+      "Agen antimuskarinik",
+      "Lansoprazole",
+      "Antagonis H2-reseptor",
+      "Prostaglandin sintetik"
+    ],
+    "answer": "Antagonis H2-reseptor"
+  },
+  {
+    "question": "Warna feses berwarna coklat karena adanya:",
+    "options": [
+      "Urobilin",
+      "Bilirubin",
+      "Stercobilinogen",
+      "Urobilinogen",
+      "Stercobilin"
+    ],
+    "answer": "Stercobilin"
+  },
+  {
+    "question": "Tanda dini kernikterus meliputi:",
+    "options": [
+      "Kelemahan dan paralisis",
+      "Malnutrisi",
+      "Bradikardia",
+      "Letargi dan pengisapan jelek",
+      "Diare"
+    ],
+    "answer": "Letargi dan pengisapan jelek"
+  },
+  {
+    "question": "Ikterus yang berkembang cepat pada 1 hari setelah lahir, kemungkinan diagnosisnya:",
+    "options": [
+      "Inkompatibilitas rhesus",
+      "Ikterus fisiologis",
+      "Sepsis azitan lambat",
+      "Defisiensi enzim",
+      "Toksik epidermal nekrosis"
+    ],
+    "answer": "Inkompatibilitas rhesus"
+  },
+  {
+    "question": "Kalimat di bawah ini yang mengandung kata bilangan tingkat ialah:",
+    "options": [
+      "Mengapa mereka berlima menangis tersedu-sedu",
+      "Padak dekan duduk di antar bangku kedua",
+      "Kedua anak itu tidak dapat menahan emosi",
+      "Ia kenal baik dengan keduanya",
+      "Kedua bangku itu bagus-bagus"
+    ],
+    "answer": "Padak dekan duduk di antar bangku kedua"
+  },
+  {
+    "question": "Penulisan jabatan dan gelar akademik yang benar pada kalimat berikut:",
+    "options": [
+      "Kami ke rumah Camat membayar ipeda rumah",
+      "Tadi pagi kami ke rumah Gubernur yang Profesor itu",
+      "Ia mendapat penghargaan dari gubernur yang profesor itu",
+      "Perguruan tinggi itu dipimpin oleh Gubernur yang Profesor",
+      "Siapakah nama Gubernur yang profesor itu?"
+    ],
+    "answer": "Kami ke rumah Camat membayar ipeda rumah"
+  },
+  {
+    "question": "Berikut ini pemakaian tanda petik (\"...\") yang benar adalah:",
+    "options": [
+      "Kata Ani, \"Buku ini bagus untuk remaja\".",
+      "Kimigawe adalah nama sebuah \"lagu\" dari jepang",
+      "Mari kita berangkat sekarang! \"ajaknya\".",
+      "Saya sudah membaca maut dan cinta karta \"Mochtar Lubis\".",
+      "\"Kami berlangganan\" harian kompas."
+    ],
+    "answer": "Kata Ani, \"Buku ini bagus untuk remaja\"."
+  },
+  {
+    "question": "Seorang bayi laki-laki berusia 12 hari dibawa oleh ibunya ke IGD RS dengan keluhan perut kembung sejak 5 hari. BAB terakhir 4 hari lalu sedikit-sedikit dan warna kehijauan. Ada muntah namun tidak menyemprot. Pada foto polos abdomen didapatkan gambaran 'two bubble'. Apakah diagnosis yang paling tepat?",
+    "options": [
+      "Stenosis pilorik",
+      "Stenosis duodenum",
+      "Invaginasi",
+      "Stenosis ani",
+      "Divertikel"
+    ],
+    "answer": "Stenosis duodenum"
+  },
+  {
+    "question": "Rute ekskresi utama bilirubin pada fetus di dalam uterus adalah:",
+    "options": [
+      "Jalur transplasenta",
+      "Degradasi menjadi biliverdin",
+      "Melalui ginjal",
+      "Reinkorporasi ke dalam hemoglobin",
+      "Sekresi hepatik dan penyimpanan di dalam lumen usus"
+    ],
+    "answer": "Jalur transplasenta"
+  },
+  {
+    "question": "Seorang perempuan berusia 70 tahun datang ke rumah sakit dengan keluhan nyeri di daerah lambung, mual, anoreksia. Dari hasil pemeriksaan histopatologi tampak pelapis epitel mukosa tatah berlapis sebagian telah mengalami destruksi dengan kelompokan sel-sel yang sudah membesar yang sebagian membentuk kelenjar. Diagnosis pasien:",
+    "options": [
+      "Lymphoma",
+      "Adenocarcinoma gaster",
+      "Adenoma",
+      "Squamous cell carcinoma",
+      "Hiperplasia polip"
+    ],
+    "answer": "Adenocarcinoma gaster"
+  },
+  {
+    "question": "Seorang perempuan umur 44 tahun mengeluh sakit perut kanan atas, hilang timbul, tanpa disertai demam. Sehari sebelumnya pasien mengkonsumsi makanan dari restoran cepat saji. Kolesterol 280 mg/dL. Apakah diagnosis pada kasus di atas?",
+    "options": [
+      "Hepatitis",
+      "Gastritis",
+      "Kolelitiasis",
+      "Pankreatitis",
+      "Kolesistitis"
+    ],
+    "answer": "Kolelitiasis"
+  },
+  {
+    "question": "Seorang perempuan berusia 55 tahun datang dengan keluhan rasa panas di dada, hilang timbul, selama 4 minggu. Sudah minum cimetidine dan antasida tapi belum berkurang. Hasil pemeriksaan endoskopi menunjukkan esofagitis. Untuk meningkatkan sekresi mukus dapat ditambahkan obat:",
+    "options": [
+      "Domperidone",
+      "Sucralfate",
+      "Metoclopramide",
+      "Alginate",
+      "Antasida"
+    ],
+    "answer": "Sucralfate"
+  },
+  {
+    "question": "Seorang laki-laki berusia 63 tahun datang ke puskesmas dengan keluhan sering nyeri abdomen, riwayat sering obstipasi, perut sering kembung. Bila defekasi sering disertai darah segar campur lendir dan terasa nyeri. Pemeriksaan yang dilakukan sebagai langkah awal untuk menegakkan diagnosis adalah:",
+    "options": [
+      "Angiografi mesenterial",
+      "Kolonoskopi total",
+      "Barium enema double contrast",
+      "Colok dubur",
+      "Foto polos abdomen tegak"
+    ],
+    "answer": "Colok dubur"
+  },
+  {
+    "question": "Dugaan penyakit berikut yang memerlukan pemeriksaan kuman Helicobacter pylori, adalah:",
+    "options": [
+      "GERD",
+      "Sirosis hepatis",
+      "Ulkus peptikum",
+      "Pankreatitis",
+      "Hepatitis"
+    ],
+    "answer": "Ulkus peptikum"
+  },
+  {
+    "question": "Akalasia esofagus pada gambaran radiologi:",
+    "options": [
+      "Dinding esofagus ulserasi",
+      "Dinding esofagus rancu",
+      "Dilatasi kardia esofagus",
+      "Gambaran mega esofagus",
+      "Dilatasi esofagus di proksimal"
+    ],
+    "answer": "Dilatasi esofagus di proksimal"
+  },
+  {
+    "question": "Obat H2 receptor antagonist sebaiknya diberikan:",
+    "options": [
+      "Sebelum makan pagi hari",
+      "Sesudah makan pagi hari",
+      "Sebelum makan malam hari",
+      "Sesudah makan",
+      "Pagi hari"
+    ],
+    "answer": "Sebelum makan malam hari"
+  },
+  {
+    "question": "Seorang wanita usia 37 tahun bekerja sebagai marketing dengan keluhan sakit bagian perut sudah 8 bulan. Sudah dilakukan operasi usus buntu, endoskopi dan kolonoskopi dengan hasil normal. Epigastric pain (+). Apakah tatalaksana yang tepat untuk kasus diatas?",
+    "options": [
+      "Operasi",
+      "Atasi infeksi",
+      "Berdasarkan gejala",
+      "Atasi depresi",
+      "Atasi psikosomatis"
+    ],
+    "answer": "Berdasarkan gejala"
+  },
+  {
+    "question": "Seorang anak laki-laki berusia 4 bulan datang ke IGD RS dengan keluhan BAB cair selama 2 hari, frek 4-6x/hari, air > ampas, tinja berbau asam. Gejala timbul sejak anak dikenalkan dengan susu formula sebelumnya anak minum ASI. Diagnosis yang paling mungkin untuk kasus di atas adalah:",
+    "options": [
+      "Diare yang disebabkan oleh Rotavirus",
+      "Susu formula tercemar bakteri patogen",
+      "Intoleransi laktosa",
+      "Konstipasi",
+      "Diare sekretori"
+    ],
+    "answer": "Intoleransi laktosa"
+  },
+  {
+    "question": "Seorang perempuan berusia 22 tahun datang berobat ke RS dengan keluhan demam. Pemeriksaan laboratorium kultur gal positif. Apakah etiologi diagnosa pasien tersebut?",
+    "options": [
+      "Streptococcus",
+      "Salmonella typosa",
+      "Escherichia coli",
+      "Mycobacterium",
+      "Pneumokokus"
+    ],
+    "answer": "Salmonella typosa"
+  },
+  {
+    "question": "Seorang perempuan 69 tahun datang ke IGD RS dengan keluhan benjolan pada perut kanan bawah yang hilang timbul sejak 15 tahun. Benjolan tidak bisa dimasukkan kembali ke dalam cavum abdominalis. Finger tip test dilakukan dan teraba di medial jari. Apakah diagnosis yang tepat?",
+    "options": [
+      "Abses inguinal",
+      "Apendisitis",
+      "Hernia inguinalis",
+      "Lipoma",
+      "Tumor abdomen"
+    ],
+    "answer": "Hernia inguinalis"
+  },
+  {
+    "question": "Seorang laki-laki berusia 34 tahun datang berobat dengan keluhan mencret bercampur darah. Dicurigai infeksi bakteri yang menyebabkan invasi epitel selaput lendir, mikroabses pada dinding usus besar, nekrosis selaput lendir, ulserasi superfisial, dan pembentukan pseudomembran. Apakah spesies yang menginfeksi pasien tersebut?",
+    "options": [
+      "Escherichia coli",
+      "Mycobacterium",
+      "Streptokokus",
+      "Salmonella typosa",
+      "Shigella dysenteriae"
+    ],
+    "answer": "Shigella dysenteriae"
+  },
+  {
+    "question": "Seorang perempuan umur 35 tahun datang dengan keluhan perut sering kembung dan makan cepat terasa penuh, sudah sekitar 4 bulan. Pola BAB normal, tanda vital normal, nyeri tekan pada epigastrium. Pemeriksaan laboratorium dan USG abdomen normal. Apakah kasus diatas?",
+    "options": [
+      "Odinofagia",
+      "Dispepsia",
+      "GERD",
+      "Disfagia",
+      "IBS"
+    ],
+    "answer": "Dispepsia"
+  },
+  {
+    "question": "Seorang perempuan berusia 35 tahun datang dengan keluhan muntah dan nyeri ulu hati selama 5 hari. Tidak tersedia obat Proton pump inhibitor. Apakah pengobatan yang diberikan dapat berupa:",
+    "options": [
+      "Ranitidin",
+      "Domperidone",
+      "Antasida + ranitidin",
+      "Antasida tablet",
+      "Domperidone + ranitidin"
+    ],
+    "answer": "Domperidone + ranitidin"
+  },
+  {
+    "question": "Gambaran di atas adalah hasil mikroskopis virus yang menginfeksi seorang pria berusia 47 tahun. Apakah khas dari mikroskopis tersebut? (Partikel dua lapis berukuran kira-kira 42 nm)",
+    "options": [
+      "Gambaran bulat inti virus dari HCV",
+      "Kapsul berlapis yang menginfeksi dari HAV",
+      "Gambaran mikroskopis mutasi DNA dari HBV",
+      "Partikel terselubung morfologi HCV",
+      "Partikel dua lapis berukuran kira-kira 42 nm yang disebut partikel Dane dari HBV"
+    ],
+    "answer": "Partikel dua lapis berukuran kira-kira 42 nm yang disebut partikel Dane dari HBV"
+  },
+  {
+    "question": "Pada masa janin ada bagian pembuluh darah pada tali pusat yang berlanjut masuk ke hepar dan menuju jantung (duktus venosus aranti). Setelah lahir, maka pembuluh darah tersebut mengalami obliterasi dan menjadi:",
+    "options": [
+      "Ligamentum falciforme hepatis",
+      "Porta hepatis",
+      "Ligamentum teres hepatis",
+      "Duktus hepatikus",
+      "Ligamentum coronarium hepatis"
+    ],
+    "answer": "Ligamentum teres hepatis"
+  },
+  {
+    "question": "Seorang laki-laki berusia 29 tahun datang berobat dengan keluhan sakit pada perut kanan bawah sejak kemarin. Pada pemeriksaan palpasi dijumpai nyeri tekan pada titik McBurney's. Pada abdomen bagaimanakah yang dapat memberikan gejala nyeri tekan pada pasien tersebut?",
+    "options": [
+      "Regio iliaca dextra",
+      "Regio iliaca sinistra",
+      "Regio umbilikalis",
+      "Regio epigastrium",
+      "Regio lumbalis dekster"
+    ],
+    "answer": "Regio iliaca dextra"
+  },
+  {
+    "question": "Seorang laki-laki berusia 60 tahun datang ke poli RS dengan keluhan massa yang keluar dari anus sejak 8 tahun. Massa semakin besar dan tidak masuk setelah BAB. Permukaan massa merah mengkilap dan lembab. Apakah diagnosis yang paling mungkin?",
+    "options": [
+      "Karsinoma rekti",
+      "Hemoroid grade 3-4",
+      "Prolaps rekti",
+      "Proktitis",
+      "Intususepsi"
+    ],
+    "answer": "Prolaps rekti"
+  },
+  {
+    "question": "Seorang perempuan berusia 55 tahun datang dengan keluhan rasa panas di dada, hilang timbul, selama 4 minggu. Sudah minum cimetidine dan antasida, belum berkurang. Hasil pemeriksaan endoskopi menunjukkan esofagitis. Untuk mencapai penyembuhan penyakit, anda perlu meresepkan obat PPI selama:",
+    "options": [
+      "3 minggu",
+      "1 minggu",
+      "2 minggu",
+      "5 hari",
+      "4 minggu"
+    ],
+    "answer": "4 minggu"
+  },
+  {
+    "question": "Seorang perempuan berusia 20 tahun datang ke RS dengan keluhan nyeri perut, paling berat di ulu hati. Nyeri memberat setelah makan. Pasien didiagnosa dengan ulkus peptikum DD gastritis. Salah satu etiologi gastritis adalah:",
+    "options": [
+      "Asupan tinggi lemak trans dan kolesterol",
+      "Diet tinggi serat",
+      "Aspirin dan NSAID",
+      "Omega 6",
+      "Omega 3"
+    ],
+    "answer": "Aspirin dan NSAID"
+  },
+  {
+    "question": "Seorang bayi baru lahir dengan berat badan 3000 gram usia 5 jam dengan seluruh badan menguning, bayi malas menghisap, kadar bilirubin 20 mg/dl. Apakah komplikasi berat yang bisa terjadi pada bayi tersebut?",
+    "options": [
+      "Hipoglikemia",
+      "Hipotermia",
+      "Kernicterus",
+      "Sesak nafas",
+      "BBLR"
+    ],
+    "answer": "Kernicterus"
+  },
+  {
+    "question": "Fase deglutisi manakah yang melibatkan kontraksi lapisan otot longitudinal muskularis?",
+    "options": [
+      "Buccal phase",
+      "Voluntary phase",
+      "Pharyngeal phase",
+      "Esophageal phase",
+      "Semua diatas"
+    ],
+    "answer": "Esophageal phase"
+  },
+  {
+    "question": "Seorang laki-laki berusia 35 tahun datang ke puskesmas dengan keluhan benjolan di bekas laparotomi yang hilang timbul. Pada saat dioperasi isi kantong hernia adalah diverticulum meckel. Apakah diagnosis yang tepat?",
+    "options": [
+      "Hernia spieghel",
+      "Hernia littre",
+      "Hernia bochdalek",
+      "Hernia diafragmatika",
+      "Hernia lumbalis"
+    ],
+    "answer": "Hernia littre"
+  },
+  {
+    "question": "Seorang pria umur 55 tahun masuk rumah sakit dengan muntah darah dan BAB hitam sejak 1 hari yang lalu. Dijumpai adanya spider naevi di dada, eritema palmaris dan ginekomastia. Apakah diagnosis pada pasien diatas?",
+    "options": [
+      "Hepatitis akut",
+      "Fatty liver",
+      "Sirosis hepatis",
+      "Kolelitiasis",
+      "Hepatitis kronik"
+    ],
+    "answer": "Sirosis hepatis"
+  },
+  {
+    "question": "Seorang perempuan 17 tahun datang ke IGD RS dengan keluhan kram perut sejak 1 jam. Pasien sejak kecil tidak suka minum susu. Sebelumnya pasien minum susu sapi di kafe. Mual serta perut kembung dikeluhkan. Apakah kemungkinan diagnosa pada pasien ini?",
+    "options": [
+      "Pankreatitis",
+      "Sprue celiac",
+      "Dyspepsia",
+      "Penyakit Chron",
+      "Intoleransi laktosa"
+    ],
+    "answer": "Intoleransi laktosa"
+  },
+  {
+    "question": "Seorang perempuan 50 tahun dibawa ke IGD RS dengan keluhan nyeri perut kanan atas sejak 4 jam yang lalu. Nyeri menjalar ke tulang belikat kanan dan ke punggung. Murphys sign positif. Leukosit 14.500/mm3. Apakah kemungkinan diagnosis pada pasien ini?",
+    "options": [
+      "Angina pektoris",
+      "Kolesistitis",
+      "Gastritis",
+      "GERD",
+      "Ulkus peptikum"
+    ],
+    "answer": "Kolesistitis"
+  },
+  {
+    "question": "Seorang laki-laki berusia 20 tahun datang ke puskesmas dengan keluhan perut kembung, tidak bisa kentut dan tidak bisa buang air besar selama 2 hari. Tidak didapatkan defans muskuler. Pada auskultasi, terdapat metallic sound. Apakah diagnosisnya?",
+    "options": [
+      "Peritonitis",
+      "Periapendicular abses",
+      "Appendisitis",
+      "Ileus paralitik",
+      "Ileus obstruktif"
+    ],
+    "answer": "Ileus obstruktif"
+  },
+  {
+    "question": "Seorang wanita, usia 37 tahun bekerja sebagai marketing dengan keluhan sakit bagian perut selama 8 bulan. Sudah dilakukan operasi usus buntu, endoskopi, dan kolonoskopi dengan hasil normal. Apakah diagnosis yang tepat untuk kasus diatas?",
+    "options": [
+      "Inflammatory bowel disease",
+      "Irritable bowel syndrome (IBS)",
+      "Crohn's disease",
+      "Ulcerative colitis",
+      "Dyspepsia tipe fungsional"
+    ],
+    "answer": "Irritable bowel syndrome (IBS)"
+  },
+  {
+    "question": "Seorang perempuan 47 tahun dibawa ke IGD RS dengan keluhan nyeri ulu hati sejak 3 hari yang lalu. Nyeri seperti ditusuk-tusuk dan hilang timbul. Perut kembung dan mual. Nyeri tekan epigastrium (+). Apakah diagnosis yang paling mungkin?",
+    "options": [
+      "Gastritis",
+      "Kolesistitis",
+      "Apendisitis",
+      "Hepatitis",
+      "Kolelitiasis"
+    ],
+    "answer": "Gastritis"
+  },
+  {
+    "question": "Seorang anak laki-laki 2 tahun datang ke puskesmas dengan keluhan perut kembung dan berkurang bila BAB. Sebelumnya harus dirangsang dengan memasukkan sabun mandi ke dalam anus. RT: ampulla collaps. Apakah diagnosis yang tepat?",
+    "options": [
+      "Hirschprung disease",
+      "Atresia ani letak tinggi",
+      "Crohn disease",
+      "Invaginasi",
+      "Diverticulitis"
+    ],
+    "answer": "Hirschprung disease"
+  },
+  {
+    "question": "Seorang bayi laki-laki berusia 3 minggu dibawa ibunya ke praktek dokter dengan keluhan testis membesar tiap kali bayinya menangis. Bayi mengalami demam 38,5°C. Pada perabaan testis terasa sakit. Tes transluminasi (+). Apakah diagnosis yang tepat?",
+    "options": [
+      "Undescensus testis",
+      "Hernia scrotalis",
+      "Torsio testis",
+      "Hidrokel",
+      "Radang testis"
+    ],
+    "answer": "Hidrokel"
+  },
+  {
+    "question": "Seorang laki-laki berusia 30 tahun dengan keluhan perut kembung tidak bisa BAB sejak 2 hari. 2 tahun yang lalu pernah operasi usus buntu. TD 70/40, perfusi dingin dan pucat basah. Penanganan yang awal adalah:",
+    "options": [
+      "Dilakukan pemeriksaan foto rontgen abdomen",
+      "Pasang urin kateter",
+      "Diberikan oksigenasi kateter hidung 4 L/m",
+      "Dilakukan infus RL untuk rehidrasi",
+      "Diberikan suntikan adrenalin 0,5 mg/i.m"
+    ],
+    "answer": "Dilakukan infus RL untuk rehidrasi"
+  },
+  {
+    "question": "Seorang laki-laki berusia 55 tahun dibawa ke IGD RS dengan keluhan mata kuning serta badan terasa letih dan lesu. Pasien memiliki riwayat GGK dan sering mendapat transfusi darah. Saat ini menjalani hemodialisa rutin. HBsAg negatif, anti HCV positif. Apakah diagnosa pasien ini?",
+    "options": [
+      "Kolelitiasis",
+      "Ca caput pankreas",
+      "Kolesistitis",
+      "Hepatitis C",
+      "Hepatitis B kronis"
+    ],
+    "answer": "Hepatitis C"
+  },
+  {
+    "question": "Seorang perempuan berusia 55 tahun mengeluh nyeri abdomen atas dengan tinja seperti ter. Pada pemeriksaan endoskopi saluran cerna bagian atas terdapat sub-mukosa yang padat, licin, kekuningan. Pada pemeriksaan jaringan operasi menunjukkan sel-sel gelondong dengan sitoplasma bervakuola. Apa kemungkinan diagnosis yang paling mungkin?",
+    "options": [
+      "Adenokarsinoma lambung",
+      "Tukak peptik",
+      "Limfoma lambung",
+      "Tumor stroma gastrointestinal",
+      "Hiperplasia polip"
+    ],
+    "answer": "Tumor stroma gastrointestinal"
+  },
+  {
+    "question": "Seorang bayi laki-laki berusia 5 minggu datang berobat ke klinik diantar oleh ibunya. Ibu sebelum kehamilan pernah dirawat inap karena infeksi virus. Apakah jenis virus yang menginfeksi anak tersebut?",
+    "options": [
+      "HDV",
+      "HAV",
+      "HEV",
+      "HCV",
+      "HBV"
+    ],
+    "answer": "HBV"
+  },
+  {
+    "question": "Seorang laki-laki berusia 40 tahun datang ke puskesmas dengan keluhan nyeri di bagian anus dan perut bagian bawah, disertai dorongan untuk BAB terus menerus, keluar lendir atau darah dari anus. Riwayat sosial: pasien mempunyai pasangan sesama jenis. Apakah diagnosis yang paling mungkin?",
+    "options": [
+      "Hemoroid interna",
+      "Gastroenteritis",
+      "Appendisitis",
+      "Demam tifoid",
+      "Proktitis"
+    ],
+    "answer": "Proktitis"
+  },
+  {
+    "question": "Analisa cairan pleura tersebut dibawah ini merupakan ciri eksudat:",
+    "options": [
+      "Kadar LDH < 200 IU",
+      "Jumlah sel < 500",
+      "Protein < 3gr/dl",
+      "Kadar glukosa sama dengan plasma",
+      "Test Rivalta positif"
+    ],
+    "answer": "Test Rivalta positif"
+  },
+  {
+    "question": "Obat beta blocker yang biasanya digunakan untuk mengurangi tekanan portal dan perdarahan esofagus adalah:",
+    "options": [
+      "Bisoprolol",
+      "Sotalol",
+      "Propranolol",
+      "Atenolol",
+      "Acebutolol"
+    ],
+    "answer": "Propranolol"
+  },
+  {
+    "question": "Seorang bayi dibawa ibunya ke UGD RS karena adanya benjolan pada bagian perut. Terdapat invaginasi yang bisa menghambat aliran dari arteri mesenterika superior. Apakah yang merupakan cabang dari arteri ini?",
+    "options": [
+      "A. Ileocolica",
+      "A. Sigmoidea",
+      "A. Gastrica sinistra",
+      "A. Linealis",
+      "A. Colica sinistra"
+    ],
+    "answer": "A. Ileocolica"
+  },
+  {
+    "question": "Seorang laki-laki berusia 65 tahun mengeluh gangguan pencernaan setelah makan dan heart burn datang dengan nyeri abdomen atas. Sudah mendapat terapi PPI selama 6 bulan tapi keluhan tidak berkurang. Pada pemeriksaan endoskopi dijumpai benjolan pada bagian distal esofagus. Pada pemeriksaan histopatologi tampak sel-sel atipik membentuk kelenjar dengan 'mucin pool' yang masif. Diagnosa pasien:",
+    "options": [
+      "Lymphoma",
+      "Mucinous adenocarcinoma arising in Barrett esophagus",
+      "Adenoma",
+      "Squamous cell carcinoma",
+      "Gastritis"
+    ],
+    "answer": "Mucinous adenocarcinoma arising in Barrett esophagus"
+  },
+  {
+    "question": "Seorang laki-laki berusia 25 tahun datang dengan keluhan BAB berdarah merah segar sejak 3 hari. Didiagnosis dengan Crohn's disease. Jenis lemak yang dianjurkan adalah:",
+    "options": [
+      "Kolesterol",
+      "Short chain fatty acid",
+      "Medium chain triglyceride",
+      "Lemak trans",
+      "Long chain triglyceride"
+    ],
+    "answer": "Medium chain triglyceride"
+  },
+  {
+    "question": "Pengrusakan pada daerah lateral hipotalamus sangat berpengaruh pada keadaan dibawah ini antara lain:",
+    "options": [
+      "Gangguan nafsu makan",
+      "Kelemahan otot",
+      "Kesulitan berkonsentrasi",
+      "Kesulitan bernapas",
+      "Gangguan tidur"
+    ],
+    "answer": "Gangguan nafsu makan"
+  },
+  {
+    "question": "Seorang perempuan 35 tahun datang ke poliklinik umum RS dengan keluhan nyeri ulu hati, rasa terbakar, sulit menelan, mual dan muntah. Pasien sudah mendapat ranitidine tapi tidak mengalami perbaikan. Apakah diagnosis yang paling tepat?",
+    "options": [
+      "GERD",
+      "Kolesistitis",
+      "Dyspepsia",
+      "Gastritis",
+      "Kolelitiasis"
+    ],
+    "answer": "GERD"
+  },
+  {
+    "question": "Seorang anak laki-laki berusia 10 tahun dibawa ke puskesmas dengan keluhan gatal-gatal dan kemerahan yang memanjang di punggung kaki kanannya. Pasien suka main-main bola di dekat tempat pembuangan sampah dan malas memakai alas kaki. Eosinophil meningkat. Apakah diagnosis yang tepat?",
+    "options": [
+      "Trichuriasis",
+      "Ascariasis",
+      "Taeniasis",
+      "Lung migration",
+      "Cutaneous larva migrans"
+    ],
+    "answer": "Cutaneous larva migrans"
+  },
+  {
+    "question": "Seorang perempuan berusia 50 tahun dirujuk ke poliklinik RS dengan keluhan jaundice berat. Didiagnosa dengan kanker pankreas. Lokasi kanker pankreas tersebut yang paling mungkin berada pada bagian:",
+    "options": [
+      "Processus uncinatus",
+      "Corpus",
+      "Cauda",
+      "Duktus pancreatis santorini",
+      "Caput"
+    ],
+    "answer": "Caput"
+  },
+  {
+    "question": "Pertanda serologi virus hepatitis berikut yang menyatakan kekebalan atau imunitas terhadap infeksi virus hepatitis B adalah:",
+    "options": [
+      "Anti HBc IgM",
+      "HBeAg",
+      "HBV-DNA",
+      "Anti HBe",
+      "Anti HBs"
+    ],
+    "answer": "Anti HBs"
+  },
+  {
+    "question": "Seorang laki-laki berusia 56 tahun datang dengan keluhan perut membesar, gembung dan tidak ada nafsu makan, yang telah berlangsung 2 minggu. Sudah dapat pengobatan antasida dan ranitidine tapi keluhan tidak berkurang. Hasil pemeriksaan USG menunjukkan liver cirrhosis dan ascites. Apakah pengobatan terhadap komplikasi perdarahan dapat diberikan?",
+    "options": [
+      "Furosemide",
+      "Somatostatin dan beta bloker",
+      "Spironolakton",
+      "Beta bloker",
+      "Somatostatin"
+    ],
+    "answer": "Somatostatin dan beta bloker"
+  },
+  {
+    "question": "Seorang perempuan berusia 50 tahun datang ke praktek anda dengan keluhan nyeri ulu hati berlangsung 2 minggu, terutama malam hari. Pasien dyspepsia ini dapat diterapi dengan menggunakan obat inhibitor H+, K+, ATPase yaitu:",
+    "options": [
+      "Lansoprazole",
+      "Famotidine",
+      "Metoclopramide",
+      "Domperidone"
+    ],
+    "answer": "Lansoprazole"
+  },
+  {
+    "question": "Area otak yang memainkan peran penting dalam produksi hormon dan membantu merangsang banyak proses penting dalam tubuh serta homeostasis, antara lain:",
+    "options": [
+      "Hipotalamus",
+      "Hipopise posterior",
+      "Medulla oblongata",
+      "Cerebellum",
+      "Hipopise anterior"
+    ],
+    "answer": "Hipotalamus"
+  },
+  {
+    "question": "Seorang laki-laki berusia 40 tahun datang ke dokter dengan keluhan bercak putih di bagian bawah lidah sejak 1 minggu. Bercak tidak terasa nyeri. Riwayat merokok selama 20 tahun. Plak putih tidak bisa diangkat. Apakah diagnosis yang tepat?",
+    "options": [
+      "Ulkus apthosa",
+      "Leukoplakia",
+      "Karsinoma sel skuamosa",
+      "Stomatitis jamur",
+      "Oral trush"
+    ],
+    "answer": "Leukoplakia"
+  },
+  {
+    "question": "Seorang bayi laki-laki berusia 6 bulan dibawa oleh ibunya ke IGD dengan keluhan sering tiba-tiba menangis karena sakit perut berulang disertai muntah dan BAB berlendir berwarna kemerahan. Pada pemeriksaan USG abdomen didapatkan massa dengan gambaran 'doughnut sign atau target sign'. Diagnosa yang tepat untuk pasien ini adalah:",
+    "options": [
+      "Ileus obstruksi",
+      "Tumor intra abdomen",
+      "Invaginasi",
+      "Volvulus",
+      "Peritonitis"
+    ],
+    "answer": "Invaginasi"
+  },
+  {
+    "question": "Seorang laki-laki berusia 46 tahun datang ke praktek dokter dengan keluhan nyeri pada perut bagian kanan atas sejak 3 bulan. Ibu pasien meninggal dunia pada umur 56 tahun karena muntah darah dan perut yang membuncit. Hepar teraba 3 jari dibawah arcus costa, keras berbenjol, nyeri tekan (+), bruit (+). Apakah diagnosis yang tepat?",
+    "options": [
+      "Hepatoma",
+      "Limfoma",
+      "Hepatitis kronis",
+      "Fatty liver",
+      "Abses hepar"
+    ],
+    "answer": "Hepatoma"
+  },
+  {
+    "question": "Seorang wanita berusia 22 tahun datang berobat dengan keluhan mencret 7 kali. Mencret dengan konsistensi air muncrat dan perut kembung. Dicurigai diare yang disebabkan oleh infeksi bakteri. Apakah bakteri yang menginfeksi pasien tersebut?",
+    "options": [
+      "Salmonella",
+      "Herpes virus",
+      "Shigella dysentriae",
+      "Clostridium tetani",
+      "Escherichia coli"
+    ],
+    "answer": "Escherichia coli"
+  },
+  {
+    "question": "Pemeriksaan enzim untuk mendiagnosa pankreatitis yang lebih spesifik adalah:",
+    "options": [
+      "Lipase",
+      "SGPT",
+      "Amilase",
+      "CA 19-9",
+      "SGOT"
+    ],
+    "answer": "Lipase"
+  },
+  {
+    "question": "Pemeriksaan mikroskopis menghitung jumlah sel leukosit dilakukan dengan memakai larutan:",
+    "options": [
+      "Rees Ecker",
+      "Turk",
+      "Giemsa",
+      "Na Citrate 3,8%",
+      "Hayem"
+    ],
+    "answer": "Turk"
+  },
+  {
+    "question": "Seorang bayi laki-laki berusia 8 bulan diantar oleh kedua orang tuanya ke IGD RS dengan keluhan muntah hingga 20 kali sehari, BAB berdarah berwarna hitam bercampur lendir. Pada pemeriksaan radiologi abdomen dijumpai coil spring dan tampak air fluid level. Apa diagnosa yang paling mungkin?",
+    "options": [
+      "Enterocolitis nekrotikans",
+      "Hirschprung disease",
+      "Invaginasi",
+      "Ileus paralitik",
+      "Gastroenteritis"
+    ],
+    "answer": "Invaginasi"
+  },
+  {
+    "question": "Seorang bayi laki-laki berusia 5 hari dibawa ibunya datang ke praktek dokter dengan keluhan kulit menguning mulai dari wajah hingga dada. Hal ini dialami sejak 2 hari yang lalu, ibu malas menyusui karena putting susu lecet. Saat ini kondisi bayi masih aktif dan kuat menghisap. Diagnosis yang paling memungkinkan adalah:",
+    "options": [
+      "Breast milk jaundice",
+      "Breast feeding jaundice",
+      "Dubin Johnson syndrome",
+      "Ikterus fisiologis",
+      "Atresia bilier"
+    ],
+    "answer": "Breast feeding jaundice"
+  },
+  {
+    "question": "Seorang anak laki-laki berusia 10 tahun dibawa ke puskesmas dengan keluhan gatal-gatal dan kemerahan yang memanjang di punggung kaki kanannya. Malas memakai alas kaki. Eosinophil meningkat. Bagaimana patofisiologi gatal-gatal kemerahan kasus di atas?",
+    "options": [
+      "Tertelan telur infeksi yang mengandung tinja penderita",
+      "Melalui kaki lipas atau lalat yang mengotori makanan manusia",
+      "Larva filariform di tanah yang masuk melalui kulit kaki",
+      "Termakan ikan yang mengandung serkaria",
+      "Memakan daging sapi yang mengandung proglotid cacing"
+    ],
+    "answer": "Larva filariform di tanah yang masuk melalui kulit kaki"
+  },
+  {
+    "question": "Seorang bayi laki-laki berusia 18 bulan datang berobat ke klinik dengan keluhan mencret. Feses encer, dialami 5 kali sejak pagi tadi. Minggu lalu juga mengalami keluhan yang sama namun sembuh sendiri. Tidak ada demam dan dehidrasi. Apakah etiologi dari keluhan pasien?",
+    "options": [
+      "Escherichia coli enterotoksigenik",
+      "Escherichia coli enterohaemoragik",
+      "Escherichia coli enteropatogenik",
+      "Escherichia coli enteroinvasif",
+      "Escherichia coli intestinal"
+    ],
+    "answer": "Escherichia coli enteropatogenik"
+  },
+  {
+    "question": "Larutan yang dipakai untuk pemeriksaan feses adalah:",
+    "options": [
+      "Metilen blue",
+      "Gentian violet",
+      "Eosin 2%",
+      "KOH 10%",
+      "Brilliant cresil blue (BCB)"
+    ],
+    "answer": "Eosin 2%"
+  },
+  {
+    "question": "Seorang laki-laki berusia 30 tahun datang ke poli RS dengan keluhan nyeri saat BAB sejak 1 minggu terakhir. Nyeri dirasakan seperti tersayat benda tajam dan bertahan hingga 30 menit. Disertai darah segar. Kotoran saat BAB sering keras. Apa diagnosa yang paling mungkin?",
+    "options": [
+      "Ulkus rektal",
+      "Fisura anus",
+      "Fistula anal",
+      "Ulkus perianal",
+      "Hemoroid grade 3-4"
+    ],
+    "answer": "Fisura anus"
+  },
+  {
+    "question": "Seorang anak laki-laki berusia 4 bulan, datang ke IGD RS dengan diare cair selama 2 hari, tinja berbau asam. Gejala timbul sejak anak dikenalkan dengan susu formula. Dari kasus di atas pemeriksaan penunjang yang paling tepat untuk menegakkan diagnosis tersebut adalah:",
+    "options": [
+      "Kultur feses",
+      "Uji hidrogen nafas (Breath hydrogen test)",
+      "Foto polos abdomen",
+      "Darah lengkap",
+      "Urinalisis"
+    ],
+    "answer": "Uji hidrogen nafas (Breath hydrogen test)"
+  },
+  {
+    "question": "Seorang laki-laki berusia 45 tahun datang ke poli RS dengan keluhan benjolan di anus. Benjolan keluar terlebih dahulu sebelum kotoran keluar saat BAB. Disertai darah segar yang menetes. Benjolan dapat masuk secara spontan. Apa diagnosis yang paling mungkin dialami pasien?",
+    "options": [
+      "Abses peri anal",
+      "Prolaps rekti",
+      "Hemoroid grade 1-2",
+      "Fistula peri anal",
+      "Hemoroid grade 3-4"
+    ],
+    "answer": "Hemoroid grade 1-2"
+  },
+  {
+    "question": "Organ-organ pada abdomen di bawah ini yang letaknya tidak berada pada kantong intraperitoneal adalah:",
+    "options": [
+      "Hepar",
+      "Ginjal",
+      "Gaster",
+      "Sebagian kolon",
+      "Lien"
+    ],
+    "answer": "Ginjal"
+  },
+  {
+    "question": "Seorang anak perempuan berusia 3 tahun datang dengan keluhan muntah tiap kali diberi makan atau minum, keluhan ini dialami sejak 6 bulan yang lalu, anak mengalami penurunan berat badan. Pemeriksaan penunjang untuk menegakkan diagnosis penyakit tersebut adalah:",
+    "options": [
+      "Foto polos abdomen",
+      "pH probe (12-24 jam)",
+      "USG abdomen",
+      "CT scan abdomen",
+      "Endoskopi"
+    ],
+    "answer": "pH probe (12-24 jam)"
+  },
+  {
+    "question": "Seorang perempuan berusia 37 tahun datang ke puskesmas dengan keluhan nyeri menelan walaupun hanya minum air putih. Pada pemeriksaan barium didapatkan gambaran 'paruh burung'. Apa diagnosis yang tepat?",
+    "options": [
+      "Gastritis erosiva",
+      "Esofagitis erosif",
+      "Akalasia",
+      "Esofagia",
+      "Esofagitis ulseratif"
+    ],
+    "answer": "Akalasia"
+  },
+  {
+    "question": "Seorang laki-laki berusia 38 tahun datang ke UGD RS dengan keluhan rasa tidak enak di bagian perut. Pemeriksaan foto rontgen abdomen tampak banyak udara pada lambung. Bagian dari organ lambung manakah yang dimaksud?",
+    "options": [
+      "Fundus",
+      "Kurvatura major",
+      "Gastro-oesophageal junction",
+      "Kurvatura minor",
+      "Cardia"
+    ],
+    "answer": "Fundus"
+  },
+  {
+    "question": "Untuk melindungi tubuh dari berbagai mikroorganisme dan bakteri patogen yang masuk melalui mulut, lambung menghasilkan:",
+    "options": [
+      "B12",
+      "Intrinsic factor",
+      "HCl",
+      "Enzim pepsinogen",
+      "Lipase"
+    ],
+    "answer": "HCl"
+  },
+  {
+    "question": "Seorang anak perempuan usia 3 tahun dirujuk dari RSUD ke RS kota dengan keluhan muntah darah, seluruh tubuh menguning, dan perut membesar. HBsAg (+), USG hepar menunjukkan fibrosis, mengecil, permukaan tidak rata (nodul), asites, dan pelebaran vena hepatika. Diagnosis yang paling memungkinkan untuk kasus ini adalah:",
+    "options": [
+      "Hepatitis B",
+      "Batu empedu",
+      "Atresia bilier",
+      "Ikterus fisiologis",
+      "Sirosis hepatis"
+    ],
+    "answer": "Sirosis hepatis"
+  },
+  {
+    "question": "Struktur manakah yang terletak di tempat kerongkongan menembus diafragma?",
+    "options": [
+      "Lower esophageal sphincter",
+      "Upper esophageal sphincter",
+      "Esophageal hiatus",
+      "Tidak ada jawaban yang benar",
+      "Cardiac orifice"
+    ],
+    "answer": "Esophageal hiatus"
+  },
+  {
+    "question": "Seorang bayi laki-laki berusia 2 minggu datang ke IGD RS dengan keluhan muntah berwarna hijau, selama 2 hari belum buang air besar. Pada pemeriksaan colok dubur didapatkan pergerakan meconium melambat dan obstipasi berulang. Apakah diagnosis yang tepat?",
+    "options": [
+      "Anal membrane stenosis",
+      "Meconium ileus",
+      "Rectal stenosis",
+      "Meconium plug syndrome",
+      "Penyakit Hirschprung"
+    ],
+    "answer": "Penyakit Hirschprung"
+  },
+  {
+    "question": "Seorang bayi perempuan berusia 3 bulan datang ke IGD RS dengan keluhan seluruh badan timbul ruam kemerahan, mata berair dan merah setelah diberi susu formula standar. Diagnosa yang paling memungkinkan adalah:",
+    "options": [
+      "Cacar air/varisela",
+      "Alergi susu sapi",
+      "Demam berdarah dengue",
+      "Morbili",
+      "Intoleransi laktosa"
+    ],
+    "answer": "Alergi susu sapi"
+  },
+  {
+    "question": "Seorang laki-laki berusia 64 tahun datang ke puskesmas dengan keluhan benjolan di lipatan paha. Benjolan turun saat mengedan dan masuk saat istirahat. Apakah diagnosis yang tepat?",
+    "options": [
+      "Hernia inguinalis",
+      "Hernia skrotalis",
+      "Hernia irreponibilis",
+      "Hernia strangulata",
+      "Hernia reponibilis"
+    ],
+    "answer": "Hernia reponibilis"
+  },
+  {
+    "question": "Seorang perempuan 55 tahun datang ke puskesmas dengan keluhan rasa panas di dada, hilang timbul, selama 4 minggu. Sudah minum cimetidine dan antasida, belum berkurang. Hasil pemeriksaan endoskopi menunjukkan esofagitis. Obat rasional yang diresepkan:",
+    "options": [
+      "Bismuth",
+      "Rabeprazole",
+      "Ranitidine + Metopramide",
+      "Rabeprazole + Domperidone",
+      "Ranitidine"
+    ],
+    "answer": "Rabeprazole + Domperidone"
+  },
+  {
+    "question": "Seorang perempuan, 50 tahun datang ke poliklinik umum RS dengan keluhan benjolan di pusar, sejak melahirkan anak ke-5, 10 tahun yang lalu. Benjolan tidak dapat masuk kembali dan terasa nyeri. Finger test (-). Apakah diagnosis yang tepat?",
+    "options": [
+      "Hernia inkarserata",
+      "Hernia omentum",
+      "Hernia umbilikalis",
+      "Hernia femoralis",
+      "Hernia inguinalis"
+    ],
+    "answer": "Hernia inkarserata"
+  },
+  {
+    "question": "Seorang pria berusia 19 tahun datang ke praktek saudara dengan keluhan mual-mual. Sklera menguning, hati membesar, nyeri tekan abdomen, limfa membesar disertai adenopati pada leher. Apakah jenis virus yang paling memungkinkan menginfeksi pasien tersebut?",
+    "options": [
+      "HCV",
+      "HBV",
+      "HAV",
+      "HDV",
+      "HEV"
+    ],
+    "answer": "HAV"
+  },
+  {
+    "question": "Seorang laki-laki berusia 45 tahun mengeluh nyeri abdomen dan buang air besar diare. Pada pemeriksaan histopatologi dijumpai gambaran polipoid dengan pelapis epitel kuboid, inti bulat, kromatin halus, kelenjar bentuk bulat tubular. Apa kemungkinan diagnosis yang paling mungkin?",
+    "options": [
+      "Hyperplasia polyp",
+      "Adenomatous polyp",
+      "Adenocarcinoma",
+      "Gastritis"
+    ],
+    "answer": "Adenomatous polyp"
+  },
+  {
+    "question": "Seorang bayi laki-laki berusia 1 bulan datang dibawa ibunya ke puskesmas dengan keluhan selalu muntah setiap kali menyusu. Bayi selalu terlihat lapar dan ingin menyusu kembali. Pada perabaan abdomen teraba kenyal berbentuk olive di bawah epigastrium. Apa kemungkinan diagnosis?",
+    "options": [
+      "Stenosis pilori",
+      "Volvulus",
+      "Tumor intrabdomen",
+      "Ileus",
+      "Intususepsi"
+    ],
+    "answer": "Stenosis pilori"
+  },
+  {
+    "question": "Seorang pria berusia 21 tahun dicurigai pasien terinfeksi virus pada heparnya. Virus hepatitis yang menginfeksi ini sangat pandai merubah dirinya dengan cepat sehingga tubuh tidak dapat melawan virus dengan efektif. Apakah nama virus yang menginfeksi pasien tersebut?",
+    "options": [
+      "HAV",
+      "HCV",
+      "HBV",
+      "HEV",
+      "HDV"
+    ],
+    "answer": "HCV"
+  },
+  {
+    "question": "Seorang bayi laki-laki baru lahir dengan berat badan 3000 gram usia 5 jam, seluruh badan menguning, bayi malas mengisap. Kadar bilirubin 20 mg/dL. Dari data tersebut maka bayi tersebut mengalami:",
+    "options": [
+      "Patologis jaundice",
+      "Fisiologis jaundice",
+      "BBLR",
+      "Asfiksia neonatorum",
+      "Hipoglikemia"
+    ],
+    "answer": "Patologis jaundice"
+  },
+  {
+    "question": "Seorang anak laki-laki berusia 2 bulan dibawa ke puskesmas dengan keluhan sumbing bibir dan langit (labiognatopalatoschizis unilateral sinistra komplit). Kapan usia pasien tersebut yang paling tepat dilakukan labioplasty?",
+    "options": [
+      "10 bulan",
+      "10 hari",
+      "10 tahun",
+      "10 jam",
+      "10 minggu"
+    ],
+    "answer": "10 bulan"
+  },
+  {
+    "question": "Seorang laki-laki berusia 34 tahun berobat ke dokter gigi dengan keluhan adanya benjolan pada gusi rahang atas kiri sejak 2 bulan. Pada pemeriksaan oral cavity dijumpai benjolan sebesar biji jagung yang mudah berdarah namun tidak terdapat rasa nyeri pada gingival. Diagnosa pasien adalah:",
+    "options": [
+      "Squamous cell carcinoma",
+      "Gingivitis",
+      "Adenoma",
+      "Epulis granulomatosa",
+      "Oral trush"
+    ],
+    "answer": "Epulis granulomatosa"
+  },
+  {
+    "question": "Seorang laki-laki berusia 24 tahun dibawa ke IGD dengan penurunan kesadaran. Sebelumnya kejang 4 jam yang lalu. Pasien pengguna obat-obatan terlarang. Pada pemeriksaan ekstremitas didapatkan kelumpuhan pada ekstremitas inferior. Apakah kemungkinan diagnosis pada pasien ini?",
+    "options": [
+      "Cedera tulang belakang",
+      "Cedera otak",
+      "HIV",
+      "Toxoplasmosis",
+      "Botulisme"
+    ],
+    "answer": "Toxoplasmosis"
+  },
+  {
+    "question": "Seorang laki-laki berusia 45 tahun datang ke IGD RS dengan keluhan nyeri di perut. Awal nyeri hanya di kanan saja, tetapi kemudian menyebar ke seluruh perut. Tekanan darah mulai turun, suhu 39°. Defans muskuler (+). Apakah diagnosis yang tepat?",
+    "options": [
+      "Appendisitis kronis",
+      "Peritonitis",
+      "Appendisitis akut",
+      "Ileus obstruktif",
+      "Pankreatitis"
+    ],
+    "answer": "Peritonitis"
+  },
+  {
+    "question": "Seorang pria berusia 19 tahun datang ke praktek saudara dengan keluhan mencret. Mencret dengan konsistensi lembek sebanyak 3 kali. Feses terlihat berlendir dan berdarah. Dari pemeriksaan fisik dicurigai pasien menderita infeksi bakteri. Apakah bakteri yang menginfeksi pasien tersebut?",
+    "options": [
+      "Salmonella",
+      "Shigella dysentriae",
+      "Escherichia coli",
+      "Candida albicans",
+      "Mycobacterium tuberculosis"
+    ],
+    "answer": "Shigella dysentriae"
+  },
+  {
+    "question": "Seorang laki-laki berusia 20 tahun datang ke puskesmas dengan keluhan bengkak dan nyeri selangkangan kanan sejak 2 minggu. Keluhan disertai edema dan eritema, mual dan muntah:",
+    "options": [
+      "Hidrokel",
+      "Granul inguinal",
+      "Hernia skrotalis",
+      "Lifogranuloma veneralis",
+      "Hernia inguinal"
+    ],
+    "answer": "Hernia inguinal"
+  },
+  {
+    "question": "Seorang laki-laki usia 14 tahun datang ke poliklinik RS dengan keluhan mata kuning sejak 3 hari yang lalu. SGPT meningkat 3 kali lipat dari nilai normal, anti HAV IgM reaktif. Sebelumnya 1 minggu yang lalu teman sebangku juga dirawat di RS dengan keluhan yang sama. Diagnosis yang paling memungkinkan adalah:",
+    "options": [
+      "Hepatitis A virus",
+      "Hepatitis C virus",
+      "Hepatitis B virus",
+      "Hepatitis D virus",
+      "Hepatitis E virus"
+    ],
+    "answer": "Hepatitis A virus"
+  },
+  {
+    "question": "Klinis karakteristik Toxin Botulinum:",
+    "options": [
+      "Dilatasi pupil yang reversibel, mukosa kering, kelumpuhan otot progresif, mortalitas tinggi",
+      "Miosis pupil yang menetap, mukosa kering, kelumpuhan otot progresif, mortalitas tinggi",
+      "Dilatasi pupil yang menetap, hipersalivasi, kelumpuhan otot progresif, mortalitas tinggi",
+      "Dilatasi pupil yang menetap, mukosa kering, kelumpuhan otot progresif, mortalitas tinggi",
+      "Dilatasi pupil yang menetap, mukosa kering, kelumpuhan otot progresif, mortalitas rendah"
+    ],
+    "answer": "Dilatasi pupil yang menetap, mukosa kering, kelumpuhan otot progresif, mortalitas tinggi"
+  },
+  {
+    "question": "Seorang anak perempuan berusia 3 tahun datang ke puskesmas dengan keluhan muntah tiap kali diberi makan atau minum sejak 6 bulan yang lalu. Anak mengalami penurunan berat badan. Dari gejala diatas diagnosis yang paling mendekati adalah:",
+    "options": [
+      "Dyspepsia",
+      "Keracunan makanan",
+      "Trauma kapitis",
+      "GERD",
+      "Gastroenteritis"
+    ],
+    "answer": "GERD"
+  },
+  {
+    "question": "Seorang anak perempuan berusia 3 tahun dirujuk dari RSUD ke RS kota dengan keluhan muntah darah, seluruh tubuh menguning, dan perut membesar. HBsAg (+), USG hepar mengalami fibrosis dan mengecil, permukaan tidak rata (nodul), asites, dan pelebaran vena hepatika. Pencegahan yang dapat dilakukan agar kasus serupa tidak terjadi pada anak adalah dengan memberikan:",
+    "options": [
+      "Imunisasi MMR",
+      "Imunisasi DPT",
+      "Imunisasi BCG",
+      "Imunisasi Hepatitis B",
+      "Imunisasi Polio"
+    ],
+    "answer": "Imunisasi Hepatitis B"
+  },
+  {
+    "question": "Stenosis pilorus hipertrofi:",
+    "options": [
+      "Deformity",
+      "Polip di pilorus",
+      "Murphy sign",
+      "Rigidity",
+      "Doughnut sign"
+    ],
+    "answer": "Doughnut sign"
+  },
+  {
+    "question": "Enzim Gastric Lipase yang dihasilkan lambung memerlukan substrat:",
+    "options": [
+      "Vitamin",
+      "Protein",
+      "Mineral",
+      "Lemak",
+      "Karbohidrat"
+    ],
+    "answer": "Lemak"
+  },
+  {
+    "question": "Seorang anak laki-laki berusia 10 tahun dibawa ke Puskesmas dengan keluhan gatal-gatal dan kemerahan yang memanjang di punggung kaki kanannya. Malas memakai alas kaki. Eosinophil meningkat. Terinfeksi apakah kira-kira anak ini?",
+    "options": [
+      "Taenia saginata",
+      "Ancylostoma duodenale",
+      "Ascaris lumbricoides",
+      "Trichuris trichiura",
+      "Wucheria bancrofti"
+    ],
+    "answer": "Ancylostoma duodenale"
+  },
+  {
+    "question": "Seorang laki-laki usia 46 tahun pekerjaan wiraswasta datang ke puskesmas dengan keluhan nyeri ulu hati disertai rasa gembung. Keluhan sering kambuh-kambuhan dan bila sering makan keluhannya berkurang. Apakah diagnosis yang tepat untuk kasus diatas?",
+    "options": [
+      "Dispepsia unspesifik",
+      "Dispepsia tipe ulcer",
+      "Dispepsia fungsional",
+      "Dispepsia tipe dismotilitas",
+      "Irritable bowel syndrome"
+    ],
+    "answer": "Dispepsia tipe ulcer"
+  },
+  {
+    "question": "Seorang perempuan berusia 55 tahun mengeluh nyeri abdomen. Pada pemeriksaan histopatologi dijumpai gambaran kelenjar-kelenjar dengan bentuk yang panjang-panjang dan sebagian ada gambaran bunga kol, sel-sel sudah mengalami displasia. Apa kemungkinan diagnosis yang paling mungkin?",
+    "options": [
+      "Adenomatous polyp",
+      "Gastritis",
+      "Limfoma",
+      "Villous adenoma",
+      "Hiperplasia polip"
+    ],
+    "answer": "Villous adenoma"
+  },
+  {
+    "question": "Seorang bayi laki-laki baru lahir dengan berat badan 3000 gram usia 5 jam, seluruh badan menguning, bayi malas menghisap, kadar bilirubin 20 mg/dL. Dari data tersebut maka bayi tersebut mengalami:",
+    "options": [
+      "BBLR (berat badan lahir rendah)",
+      "Asfiksia neonatrum",
+      "Fisiologis jaundice",
+      "Patologis jaundice"
+    ],
+    "answer": "Patologis jaundice"
+  },
+  {
+    "question": "Seorang laki-laki usia 55 tahun dibawa keluarganya ke IGD RS dengan keluhan mata kuning serta badan terasa letih dan lesu. Pasien memiliki riwayat GGK dan sering mendapatkan transfusi darah. Menjalani hemodialisa rutin 2 kali seminggu. HBsAg negatif, anti HCV positif. Apakah diagnosis pasien ini?",
+    "options": [
+      "Hepatitis C",
+      "Hepatitis B kronis",
+      "Ca caput pankreas",
+      "Kolesistitis",
+      "Kolelitiasis"
+    ],
+    "answer": "Hepatitis C"
+  },
+  {
+    "question": "Seorang perempuan 50 tahun datang ke praktek anda dengan keluhan nyeri ulu hati sudah berlangsung 2 minggu, terutama malam hari. Pasien dapat diterapi dengan menggunakan obat inhibitor H+, K+, ATPase yaitu:",
+    "options": [
+      "Femotidine",
+      "Lansoprazole",
+      "Metoclopramide",
+      "Domperidone"
+    ],
+    "answer": "Lansoprazole"
+  },
+  {
+    "question": "Seorang perempuan umur 39 tahun datang dengan keluhan BAB hitam seperti aspal sejak 3 hari yang lalu. Disertai nyeri ulu hati yang memberat setelah makan. Pasien mempunyai riwayat mengkonsumsi tablet diklofenak natrium. Apakah diagnosis pada kasus diatas?",
+    "options": [
+      "Tukak duodenum",
+      "Varises esofagus",
+      "Gastritis",
+      "Pankreatitis",
+      "Tukak gaster"
+    ],
+    "answer": "Tukak gaster"
+  },
+  {
+    "question": "Seorang bayi laki-laki berusia 5 hari dibawa ibunya datang ke praktek dokter dengan keluhan kulit menguning mulai dari wajah hingga dada. Ibu malas menyusui karena puting susu lecet. Saat ini kondisi bayi masih aktif dan kuat menghisap. Diagnosis yang paling memungkinkan untuk kasus diatas adalah:",
+    "options": [
+      "Dubin Johnson syndrome",
+      "Breast feeding jaundice",
+      "Atresia bilier",
+      "Breast milk jaundice"
+    ],
+    "answer": "Breast feeding jaundice"
+  },
+  {
+    "question": "Seorang perempuan 69 tahun datang ke IGD RS dengan keluhan benjolan pada perut kanan bawah yang hilang timbul sejak 15 tahun. Benjolan tidak bisa dimasukkan kembali ke dalam cavum abdominalis. Finger tip test dilakukan dan teraba di medial jari. Apakah diagnosis yang tepat untuk pasien diatas?",
+    "options": [
+      "Lipoma",
+      "Tumor abdomen",
+      "Hernia inguinalis",
+      "Abses inguinal",
+      "Apendisitis"
+    ],
+    "answer": "Hernia inguinalis"
+  },
+  {
+    "question": "Seorang pria berusia 19 tahun datang ke praktek dengan keluhan mual-mual. Sklera menguning, hati membesar, nyeri tekan abdomen, limfa membesar disertai adenopati pada leher. Apakah jenis virus yang paling memungkinkan menginfeksi pasien tersebut?",
+    "options": [
+      "HDV",
+      "HCV",
+      "HBV",
+      "HEV",
+      "HAV"
+    ],
+    "answer": "HAV"
+  },
+  {
+    "question": "Gambaran ulkus peptikum:",
+    "options": [
+      "Rigidity",
+      "Air fluid level",
+      "Deformity",
+      "Filling defect",
+      "Additional shadow"
+    ],
+    "answer": "Deformity"
+  },
+  {
+    "question": "Seorang anak usia 3 tahun dirujuk ke RS kota dengan keluhan muntah darah, seluruh tubuh menguning dan perut membesar. HBsAg (+), USG hepar mengalami fibrosis dan mengecil. Pencegahan yang dapat dilakukan agar kasus serupa tidak terjadi pada anak adalah dengan memberikan:",
+    "options": [
+      "Imunisasi MMR",
+      "Imunisasi Hepatitis B",
+      "Imunisasi BCG",
+      "Imunisasi DPT"
+    ],
+    "answer": "Imunisasi Hepatitis B"
+  },
+  {
+    "question": "Seorang perempuan berusia 20 tahun ke rumah sakit dengan keluhan utama nyeri perut, paling berat di ulu hati. Pasien didiagnosa dengan ulkus peptikum DD gastritis. Salah satu etiologi gastritis adalah:",
+    "options": [
+      "Asupan tinggi lemak trans dan kolesterol",
+      "Aspirin dan NSAID",
+      "Diet tinggi serat",
+      "Omega 3",
+      "Omega 6"
+    ],
+    "answer": "Aspirin dan NSAID"
+  },
+  {
+    "question": "Seorang laki-laki 2 tahun datang ke puskesmas dengan keluhan perut kembung dan berkurang bila BAB sebelumnya harus dirangsang dengan memasukkan sabun mandi ke dalam anus. RT: ampulla collaps. Apakah diagnosis yang tepat?",
+    "options": [
+      "Hirschprung disease",
+      "Diverticulitis",
+      "Atresia ani letak tinggi",
+      "Crohn disease",
+      "Invaginasi"
+    ],
+    "answer": "Hirschprung disease"
+  },
+  {
+    "question": "Seorang anak 10 tahun dibawa ke puskesmas dengan keluhan gatal-gatal dan kemerahan yang memanjang di punggung kaki kanannya. Malas memakai alas kaki. Eosinophil meningkat. Apakah diagnosa yang tepat?",
+    "options": [
+      "Cutaneous larva migrans",
+      "Taeniasis",
+      "Lung migration",
+      "Trichuriasis",
+      "Ascariasis"
+    ],
+    "answer": "Cutaneous larva migrans"
+  },
+  {
+    "question": "Seorang laki-laki berusia 45 tahun datang ke poli RS dengan keluhan benjolan di anus. Benjolan keluar terlebih dulu sebelum keluar saat BAB. Disertai darah segar yang menetes. Benjolan dapat masuk secara spontan. Apa diagnosis yang paling mungkin pada pasien?",
+    "options": [
+      "Prolapse rekti",
+      "Hemoroid grade 3-4",
+      "Hemoroid grade 1-2",
+      "Abses peri anal",
+      "Fistula peri anal"
+    ],
+    "answer": "Hemoroid grade 1-2"
+  },
+  {
+    "question": "Akalasia esofagus adalah:",
+    "options": [
+      "Dinding esofagus ulserasi",
+      "Gambaran mega esofagus",
+      "Dilatasi esofagus di proksimal",
+      "Dilatasi kardia esofagus",
+      "Dinding esofagus rancu"
+    ],
+    "answer": "Dilatasi esofagus di proksimal"
+  },
+  {
+    "question": "Seorang bayi laki-laki berusia 8 bulan diantar oleh kedua orang tuanya ke IGD RS dengan keluhan muntah hingga 20 kali sehari, BAB berdarah hitam bercampur lendir. Pada pemeriksaan radiologi abdomen dijumpai coil spring dan tampak air fluid level. Apa diagnosa yang paling mungkin?",
+    "options": [
+      "Invaginasi",
+      "Hirschprung disease",
+      "Ileus paralitik",
+      "Enterocolitis nekrotikans",
+      "Gastroenteritis"
+    ],
+    "answer": "Invaginasi"
+  },
+  {
+    "question": "Seorang perempuan umur 35 tahun datang dengan keluhan perut sering gembung dan makan cepat terasa penuh sudah sekitar 4 bulan. Pola BAB normal, tanda vital normal, nyeri tekan pada epigastrium. Pemeriksaan lab dan USG abdomen normal. Apakah diagnosis pada kasus diatas?",
+    "options": [
+      "Dyspepsia",
+      "Disfagia",
+      "Odynophagia",
+      "GERD",
+      "IBS"
+    ],
+    "answer": "Dyspepsia"
+  },
+  {
+    "question": "Seorang laki-laki usia 14 tahun datang ke poliklinik RS dengan keluhan mata kuning sejak 3 hari yang lalu. SGPT meningkat 3 kali lipat dari nilai normal, anti HAV IgM reaktif. Teman sebangku 1 minggu yang lalu juga dirawat di RS dengan keluhan yang sama. Diagnosis yang paling memungkinkan adalah:",
+    "options": [
+      "Hepatitis A virus",
+      "Hepatitis B virus",
+      "Hepatitis C virus",
+      "Hepatitis D virus"
+    ],
+    "answer": "Hepatitis A virus"
+  },
+  {
+    "question": "Seorang anak laki-laki berusia 4 bulan datang ke IGD RS dengan keluhan BAB cair selama 2 hari, tinja berbau asam. Gejala timbul sejak anak dikenalkan dengan susu formula sebelumnya anak minum ASI. Diagnosis yang paling mungkin adalah:",
+    "options": [
+      "Intoleransi laktosa",
+      "Susu formula tercemar bakteri patogen",
+      "Konstipasi",
+      "Diare yang disebabkan oleh rotavirus"
+    ],
+    "answer": "Intoleransi laktosa"
+  },
+  {
+    "question": "Seorang perempuan, 50 tahun datang ke poliklinik umum RS dengan keluhan benjolan di pusar, sejak melahirkan anak ke-5, 10 tahun yang lalu. Benjolan tidak dapat masuk kembali. Finger test (-). Apakah yang tepat untuk kasus pasien tersebut?",
+    "options": [
+      "Hernia umbilikalis",
+      "Hernia inkarserata",
+      "Hernia femoralis",
+      "Hernia omentum",
+      "Hernia inguinalis"
+    ],
+    "answer": "Hernia inkarserata"
+  },
+  {
+    "question": "Seorang laki-laki berusia 30 tahun datang ke poli RS dengan keluhan nyeri saat BAB sejak 1 minggu. Nyeri dirasakan seperti tersayat benda tajam dan bertahan hingga 30 menit. Disertai darah segar. Kotoran saat BAB sering keras. Apa diagnosis yang paling mungkin?",
+    "options": [
+      "Ulkus rektal",
+      "Ulkus perianal",
+      "Fisura anus",
+      "Hemoroid grade 3-4",
+      "Fistula anal"
+    ],
+    "answer": "Fisura anus"
+  },
+  {
+    "question": "Seorang pria umur 55 tahun masuk RS dengan muntah darah dan BAB hitam sejak 1 hari. Dijumpai adanya spider naevi di dada, asites, eritema palmaris dan ginekomastia. Apakah diagnosis pada pasien di atas?",
+    "options": [
+      "Kolelitiasis",
+      "Hepatitis kronik",
+      "Sirosis hepatis",
+      "Fatty liver",
+      "Hepatitis akut"
+    ],
+    "answer": "Sirosis hepatis"
+  },
+  {
+    "question": "Seorang perempuan berusia 55 tahun datang dengan keluhan rasa panas di dada, hilang timbul, selama 4 minggu. Sudah minum cimetidine dan antasida, belum berkurang. Hasil pemeriksaan endoskopi menunjukkan esofagitis. Untuk meningkatkan sekresi mukus dapat ditambahkan obat:",
+    "options": [
+      "Domperidone",
+      "Metoclopramide",
+      "Alginate",
+      "Sucralfate",
+      "Antasida"
+    ],
+    "answer": "Sucralfate"
+  },
+  {
+    "question": "Seorang laki-laki berusia 45 tahun datang ke RS dengan keluhan nyeri di perut. Awalnya nyeri hanya di kanan saja tetapi kemudian menyebar ke seluruh perut. Tekanan darah mulai turun, suhu 39 derajat. Defans muskuler (+). Apakah diagnosis yang tepat?",
+    "options": [
+      "Appendisitis kronis",
+      "Appendisitis akut",
+      "Pankreatitis",
+      "Peritonitis",
+      "Ileus obstruktif"
+    ],
+    "answer": "Peritonitis"
+  },
+  {
+    "question": "Seorang perempuan berusia 55 tahun datang ke puskesmas dengan keluhan rasa panas di dada, hilang timbul, selama 4 minggu. Sudah minum cimetidine dan antasida, belum berkurang. Hasil pemeriksaan endoskopi menunjukkan esofagitis. Obat rasional yang diresepkan:",
+    "options": [
+      "Ranitidine + metopramide",
+      "Rabeprazole + domperidone",
+      "Bismuth",
+      "Ranitidine",
+      "Rabeprazole"
+    ],
+    "answer": "Rabeprazole + domperidone"
+  },
+  {
+    "question": "Seorang perempuan berusia 17 tahun datang ke IGD RS dengan keluhan kram perut sejak 1 jam. Pasien sejak kecil tidak suka minum susu. Sebelumnya pasien minum susu sapi di kafe. Mual serta perut kembung dikeluhkan. Apakah kemungkinan diagnosis pada pasien ini?",
+    "options": [
+      "Intoleransi laktosa",
+      "Sprue celiac",
+      "Pankreatitis",
+      "Penyakit Crohn",
+      "Dyspepsia"
+    ],
+    "answer": "Intoleransi laktosa"
+  },
+  {
+    "question": "Organ-organ pada abdomen dibawah ini yang letaknya tidak berada pada kantong intraperitoneal adalah:",
+    "options": [
+      "Lien",
+      "Gaster",
+      "Sebagian kolon",
+      "Hepar",
+      "Ginjal"
+    ],
+    "answer": "Ginjal"
+  },
+  {
+    "question": "Seorang laki-laki 29 tahun datang berobat dengan keluhan sakit pada perut kanan bawah sejak kemarin. Pada pemeriksaan palpasi dijumpai nyeri tekan pada titik Mc Burney. Pada abdomen bagian manakah yang dapat memberikan gejala nyeri tekan pada pasien tersebut?",
+    "options": [
+      "Regio lumbalis dekster",
+      "Regio iliaca sinister",
+      "Regio epigastrium",
+      "Regio iliaca dekster"
+    ],
+    "answer": "Regio iliaca dekster"
+  },
+  {
+    "question": "Seorang laki-laki berusia 65 tahun mengeluh gangguan pencernaan setelah makan dan 'heart burn'. Sudah mendapat terapi PPI selama 6 bulan tapi keluhan tidak berkurang. Pada pemeriksaan endoskopi dijumpai benjolan pada bagian distal esofagus. Histopatologi: sel-sel atipik membentuk kelenjar dengan 'mucin pool' yang masif. Diagnosa pasien:",
+    "options": [
+      "Lymphoma",
+      "Squamous cell carcinoma",
+      "Adenoma",
+      "Mucinous adenocarcinoma arising in Barrett esophagus"
+    ],
+    "answer": "Mucinous adenocarcinoma arising in Barrett esophagus"
+  },
+  {
+    "question": "Seorang bayi laki-laki berusia 3 minggu dibawa ibunya ke praktek dokter dengan keluhan testis membesar tiap kali bayinya menangis. Bayi mengalami demam 38,5°C. Pemeriksaan transluminasi (+). Apa diagnosis yang tepat?",
+    "options": [
+      "Hidrokel",
+      "Undescensus testis",
+      "Torsio testis",
+      "Hernia skrotalis",
+      "Radang testis"
+    ],
+    "answer": "Hidrokel"
+  },
+  {
+    "question": "Larutan apa yang dipakai untuk pemeriksaan feses adalah:",
+    "options": [
+      "Gentian violet",
+      "Eosin 2%",
+      "Brilliant Cresil Blue (BCB)",
+      "Metilen blue",
+      "KOH 10%"
+    ],
+    "answer": "Eosin 2%"
+  },
+  {
+    "question": "Seorang wanita, usia 37 tahun bekerja sebagai marketing dengan keluhan sakit bagian perut. Sudah dilakukan operasi, endoskopi, dan kolonoskopi dengan hasil normal. Epigastric pain (+). Apakah diagnosis yang tepat?",
+    "options": [
+      "Crohn's disease",
+      "Inflammatory bowel disease",
+      "Dispepsia tipe fungsional",
+      "Irritable bowel syndrome (IBS)",
+      "Ulcerative colitis"
+    ],
+    "answer": "Irritable bowel syndrome (IBS)"
+  },
+  {
+    "question": "Seorang anak laki-laki berusia 10 tahun dibawa ke puskesmas dengan keluhan gatal-gatal dan kemerahan yang memanjang di punggung kaki kanannya. Malas memakai alas kaki. Eosinophil meningkat. Bagaimana patofisiologi gatal-gatal kemerahan kasus diatas?",
+    "options": [
+      "Tertelan telur infektif yang mengandung tinja penderita",
+      "Larva filariform di tanah yang masuk melalui kulit kaki",
+      "Termakan ikan yang mengandung serkaria",
+      "Memakan daging sapi yang mengandung proglotid cacing",
+      "Melalui kaki lipas atau lalat yang mengotori makanan manusia"
+    ],
+    "answer": "Larva filariform di tanah yang masuk melalui kulit kaki"
+  },
+  {
+    "question": "Seorang bayi laki-laki berusia 6 bulan dibawa oleh ibunya ke IGD dengan keluhan sering tiba-tiba menangis karena sakit perut berulang disertai muntah dan BAB berlendir berwarna kemerahan. Pada pemeriksaan USG abdomen didapatkan massa dengan gambaran 'doughnut sign atau target sign'. Diagnosa yang tepat adalah?",
+    "options": [
+      "Tumor intra abdomen",
+      "Peritonitis",
+      "Invaginasi",
+      "Ileus obstruksi",
+      "Volvulus"
+    ],
+    "answer": "Invaginasi"
+  },
+  {
+    "question": "Seorang bayi laki-laki berusia 2 minggu datang ke IGD RS dengan keluhan muntah berwarna hijau, 2 hari belum buang air besar. Pada abdomen bayi baru lahir terdapat usus yang keluar, membran (-), kantung (-). Kalau dipaksa dimasukkan dapat terjadi:",
+    "options": [
+      "Volvulus",
+      "Hipoksia",
+      "Ileus paralitik",
+      "Ileus obstruktif"
+    ],
+    "answer": "Ileus obstruktif"
+  },
+  {
+    "question": "Seorang bayi perempuan berusia 3 bulan datang ke IGD RS dengan keluhan seluruh badan timbul ruam kemerahan, mata berair dan merah setelah diberi susu formula standar. Diagnosa yang paling memungkinkan untuk kasus ini adalah:",
+    "options": [
+      "Demam berdarah dengue",
+      "Cacar air/varisela",
+      "Alergi susu sapi",
+      "Morbili"
+    ],
+    "answer": "Alergi susu sapi"
+  },
+  {
+    "question": "Glukokortikosteroid dapat digunakan untuk mengatasi peradangan pada IBD. Untuk mengatasi efek sampingnya dapat digantikan dengan obat:",
+    "options": [
+      "Monoclonal antibody",
+      "Anti TNF alpha",
+      "Azathiopirin",
+      "Sulfasalazin",
+      "Methotrexate"
+    ],
+    "answer": "Azathiopirin"
+  },
+  {
+    "question": "Seorang perempuan berusia 70 tahun datang kerumah sakit dengan keluhan nyeri di daerah lambung, mual, anoreksia. Dari hasil pemeriksaan histopatologi tampak pelapis epitel mukosa tatah berlapis sebagian telah mengalami destruksi dengan kelompokan sel-sel yang sudah membesar yang sebagian membentuk kelenjar. Diagnosa pasien:",
+    "options": [
+      "Squamous cell carcinoma",
+      "Adenoma",
+      "Adenocarcinoma gaster",
+      "Lymphoma"
+    ],
+    "answer": "Adenocarcinoma gaster"
+  },
+  {
+    "question": "Seorang laki-laki berusia 34 tahun berobat ke dokter gigi dengan keluhan adanya benjolan pada gusi rahang atas kiri sejak 2 bulan. Pada pemeriksaan oral cavity dijumpai benjolan yang mudah berdarah namun tidak terdapat rasa nyeri pada gingival. Diagnosa pasien adalah:",
+    "options": [
+      "Squamous cell carcinoma",
+      "Gingivitis",
+      "Epulis granulomatosa",
+      "Adenoma"
+    ],
+    "answer": "Epulis granulomatosa"
+  },
+  {
+    "question": "Seorang laki-laki berusia 63 tahun datang ke puskesmas dengan keluhan sering nyeri abdomen, riwayat sering obstipasi, perut sering kembung. Bila defekasi sering disertai darah segar campur lendir dan terasa nyeri. Pemeriksaan yang dilakukan sebagai langkah awal untuk menegakkan diagnosa adalah:",
+    "options": [
+      "Colok dubur",
+      "Kolonoskopi total",
+      "Foto polos abdomen tegak",
+      "Angiografi mesenterial",
+      "Barium enema double contrast"
+    ],
+    "answer": "Colok dubur"
+  },
+  {
+    "question": "Seorang laki-laki berusia 1 bulan datang dibawa ibunya ke puskesmas dengan keluhan selalu muntah setiap kali menyusu. Bayi selalu terlihat lapar dan ingin menyusu kembali. Pada perabaan abdomen teraba massa kenyal berbentuk olive di bawah epigastrium. Apa kemungkinan diagnosis pada anak tersebut?",
+    "options": [
+      "Ileus",
+      "Tumor intrabdomen",
+      "Intususepsi",
+      "Volvulus",
+      "Stenosis pilori"
+    ],
+    "answer": "Stenosis pilori"
+  },
+  {
+    "question": "Seorang laki-laki berusia 46 tahun datang ke praktek dokter dengan keluhan nyeri pada perut kanan atas sejak 3 bulan. Ibu pasien meninggal dunia pada umur 56 tahun karena muntah darah dan perut yang membuncit. Hepar teraba keras berbenjol, nyeri tekan (+), bruit (+). Apakah diagnosis yang tepat?",
+    "options": [
+      "Hepatoma",
+      "Limfoma",
+      "Hepatitis kronis",
+      "Abses hepar",
+      "Fatty liver"
+    ],
+    "answer": "Hepatoma"
+  },
+  {
+    "question": "Seorang laki-laki berusia 40 tahun datang ke puskesmas dengan keluhan nyeri di bagian anus dan perut bagian bawah, disertai dorongan untuk BAB terus menerus. Riwayat sosial: pasien mempunyai pasangan sesama jenis. Apakah diagnosis yang paling mungkin?",
+    "options": [
+      "Demam tifoid",
+      "Appendisitis",
+      "Proktitis",
+      "Gastroenteritis",
+      "Hemoroid interna"
+    ],
+    "answer": "Proktitis"
+  },
+  {
+    "question": "Seorang laki-laki berusia 20 tahun datang ke puskesmas dengan keluhan perut kembung, tidak bisa kentut dan tidak bisa buang air besar selama 2 hari. Pada auskultasi, terdapat metallic sound. Apakah diagnosis yang tepat?",
+    "options": [
+      "Ileus paralitik",
+      "Periapendicular abses",
+      "Ileus obstruktif",
+      "Peritonitis",
+      "Appendisitis"
+    ],
+    "answer": "Ileus obstruktif"
+  },
+  {
+    "question": "Seorang anak perempuan berusia 3 tahun dirujuk dari RSUD ke RS kota dengan keluhan muntah darah, seluruh tubuh menguning, dan perut membesar. HBsAg (+), USG hepar mengalami fibrosis dan mengecil, permukaan tidak rata (nodul), asites. Diagnosis yang paling memungkinkan untuk kasus ini adalah:",
+    "options": [
+      "Sirosis hepatis",
+      "Batu empedu",
+      "Hepatitis B",
+      "Atresia bilier"
+    ],
+    "answer": "Sirosis hepatis"
+  },
+  {
+    "question": "Pengrusakan pada daerah lateral hipotalamus sangat berpengaruh pada keadaan dibawah ini, antara lain:",
+    "options": [
+      "Kesulitan berkonsentrasi",
+      "Gangguan tidur",
+      "Kesulitan bernapas",
+      "Kelemahan otot",
+      "Gangguan nafsu makan"
+    ],
+    "answer": "Gangguan nafsu makan"
+  },
+  {
+    "question": "Seorang laki-laki berusia 30 tahun datang ke IGD RS dengan keluhan perut kembung tidak bisa BAB sejak 2 hari. 2 tahun yang lalu pernah operasi usus buntu. TD 70/40, perfusi dingin dan pucat basah. Penanganan yang awal adalah:",
+    "options": [
+      "Dilakukan infus RL untuk rehidrasi",
+      "Diberikan oksigenasi kateter hidung 4 L/m",
+      "Dilakukan pemeriksaan foto rontgen abdomen",
+      "Diberikan suntikan adrenalin 0,5 mg/i.m",
+      "Pasang urin kateter"
+    ],
+    "answer": "Dilakukan infus RL untuk rehidrasi"
+  },
+  {
+    "question": "Seorang laki-laki berusia 40 tahun datang dengan keluhan bercak putih di bagian bawah lidah sejak 1 minggu. Bercak tidak terasa nyeri. Riwayat merokok selama 20 tahun. Plak putih tidak bisa diangkat. Apakah diagnosis yang tepat?",
+    "options": [
+      "Stomatitis jamur",
+      "Oral trush",
+      "Karsinoma sel skuamosa",
+      "Leukoplakia",
+      "Ulkus apthosa"
+    ],
+    "answer": "Leukoplakia"
+  },
+  {
+    "question": "Seorang perempuan 35 tahun datang ke poliklinik umum RS dengan keluhan nyeri ulu hati, rasa terbakar, sulit menelan, mual, dan muntah 2 kali. Pasien sudah mendapat ranitidin tapi tidak mengalami perbaikan. Apakah diagnosis yang paling tepat untuk kasus diatas?",
+    "options": [
+      "GERD",
+      "Kolelitiasis",
+      "Dispepsia",
+      "Kolesistitis",
+      "Gastritis"
+    ],
+    "answer": "GERD"
+  },
+  {
+    "question": "Seorang perempuan berusia 55 tahun mengeluh nyeri abdomen atas dengan tinja seperti ter. Pada pemeriksaan endoskopi saluran cerna bagian atas terdapat massa sub-mukosa yang padat, licin, kekuningan. Pada pemeriksaan jaringan operasi menunjukkan sel-sel gelondong dengan sitoplasma bervakuola. Apa kemungkinan diagnosis yang paling mungkin?",
+    "options": [
+      "Tumor stroma gastrointestinal",
+      "Tukak peptik",
+      "Adenokarsinoma lambung",
+      "Limfoma lambung"
+    ],
+    "answer": "Tumor stroma gastrointestinal"
+  },
+  {
+    "question": "Seorang bayi baru lahir dengan berat badan 3000 gram usia 5 jam, seluruh badan menguning, bayi malas menghisap. Kadar bilirubin 20 mg/dL. Apakah komplikasi berat yang bisa terjadi pada bayi tersebut adalah:",
+    "options": [
+      "Sesak napas",
+      "Kernicterus",
+      "Hipotermia",
+      "Hipoglikemia"
+    ],
+    "answer": "Kernicterus"
+  },
+  {
+    "question": "Seorang wanita usia 37 tahun bekerja sebagai marketing dengan keluhan sakit bagian perut. Sudah dilakukan operasi, endoskopi, dan kolonoskopi dengan hasil normal. Epigastric pain (+). Apakah tatalaksana yang tepat untuk kasus di atas?",
+    "options": [
+      "Berdasarkan gejala",
+      "Atasi depresi",
+      "Atasi psikosomatis",
+      "Operasi",
+      "Atasi infeksi"
+    ],
+    "answer": "Berdasarkan gejala"
+  },
+  {
+    "question": "Seorang pria berusia 21 tahun dicurigai pasien terinfeksi virus pada heparnya. Virus hepatitis yang menginfeksi ini sangat pandai merubah dirinya dengan cepat sehingga tubuh tidak dapat melawan virus dengan efektif. Apakah jenis virus yang menginfeksi pasien tersebut?",
+    "options": [
+      "HEV",
+      "HAV",
+      "HBV",
+      "HDV",
+      "HCV"
+    ],
+    "answer": "HCV"
+  },
+  {
+    "question": "Seorang bayi laki-laki berusia 5 minggu datang berobat ke klinik diantar oleh ibunya. Ibu sebelum kehamilan pernah dirawat inap karena infeksi virus. Apakah jenis virus menginfeksi anak tersebut?",
+    "options": [
+      "HAV",
+      "HDV",
+      "HEV",
+      "HBV",
+      "HCV"
+    ],
+    "answer": "HBV"
+  },
+  {
+    "question": "Seorang pria berusia 19 tahun datang ke praktek dengan keluhan mencret. Mencret dengan konsistensi lembek sebanyak 3 kali. Feses terlihat berlendir berdarah. Dari pemeriksaan fisik dicurigai infeksi bakteri. Apakah bakteri yang menginfeksi pasien tersebut?",
+    "options": [
+      "Salmonella",
+      "Shigella dysentriae",
+      "Candida albicans",
+      "Mycobacterium tuberculosis",
+      "E. coli"
+    ],
+    "answer": "Shigella dysentriae"
+  },
+  {
+    "question": "Seorang perempuan berusia 47 tahun dibawa ke IGD RS dengan keluhan nyeri ulu hati sejak 3 hari yang lalu. Nyeri seperti ditusuk-tusuk dan hilang timbul. Nyeri tekan epigastrium (+). Apakah diagnosis yang paling mungkin untuk kasus di atas?",
+    "options": [
+      "Gastritis",
+      "Kolelitiasis",
+      "Kolesistitis",
+      "Apendisitis",
+      "Hepatitis"
+    ],
+    "answer": "Gastritis"
+  },
+  {
+    "question": "Seorang bayi laki-laki berusia 18 bulan datang berobat ke klinik dengan keluhan mencret. Feses encer, dialami 5 kali sejak pagi tadi. Minggu lalu juga mengalami keluhan yang sama namun sembuh dengan sendirinya. Tidak ada demam dan dehidrasi. Apakah etiologi dari keluhan pasien?",
+    "options": [
+      "E. Coli intestinal",
+      "E. Coli enterohaemoragik",
+      "E. Coli enterotoksigenik",
+      "E. Coli enteroinvasif",
+      "E. Coli enteropatogenik"
+    ],
+    "answer": "E. Coli enteropatogenik"
+  },
+  {
+    "question": "Pertanda serologi virus hepatitis berikut yang menyatakan kekebalan atau imunitas terhadap infeksi virus hepatitis B, adalah:",
+    "options": [
+      "Anti HBs",
+      "Anti HBc IgM",
+      "HBeAg",
+      "Anti HBe",
+      "HBV-DNA"
+    ],
+    "answer": "Anti HBs"
+  },
+  {
+    "question": "Seorang laki-laki berusia 56 tahun datang ke praktek anda dengan keluhan perut membesar, gembung dan tidak ada nafsu makan, yang telah berlangsung 2 minggu. Seminggu yang lalu pernah keluar sedikit darah dari mulut. Hasil pemeriksaan USG menunjukkan liver cirrhosis dan ascites. Apakah pengobatan terhadap komplikasi perdarahan dapat diberikan?",
+    "options": [
+      "Somatostatin",
+      "Beta bloker",
+      "Somatostatin dan beta bloker",
+      "Spironolakton",
+      "Furosemide"
+    ],
+    "answer": "Somatostatin dan beta bloker"
+  },
+  {
+    "question": "Seorang laki-laki berusia 25 tahun datang dengan keluhan BAB berdarah merah segar sejak 3 hari. Pasien didiagnosis dengan Crohn's disease. Jenis lemak yang dianjurkan adalah:",
+    "options": [
+      "Short chain fatty acid",
+      "Kolesterol",
+      "Medium chain triglyceride",
+      "Lemak trans",
+      "Long chain triglyceride"
+    ],
+    "answer": "Medium chain triglyceride"
+  },
+  {
+    "question": "Seorang anak perempuan berusia 3 tahun datang dengan keluhan muntah tiap kali diberi makan atau minum sejak 6 bulan yang lalu. Anak mengalami penurunan berat badan. Pemeriksaan penunjang untuk menegakkan diagnosis penyakit tersebut adalah:",
+    "options": [
+      "pH probe (12-24 jam)",
+      "USG abdomen",
+      "CT scan abdomen",
+      "Foto polos abdomen"
+    ],
+    "answer": "pH probe (12-24 jam)"
+  },
+  {
+    "question": "Seorang anak perempuan berusia 3 tahun datang ke puskesmas dengan keluhan muntah tiap kali diberi makan atau minum sejak 6 bulan yang lalu. Anak mengalami penurunan berat badan. Dari gejala di atas diagnosis yang paling mendekati adalah:",
+    "options": [
+      "Trauma kapitis",
+      "Keracunan makanan",
+      "Gastroesofageal reflux disease (GERD)",
+      "Dyspepsia"
+    ],
+    "answer": "Gastroesofageal reflux disease (GERD)"
+  },
+  {
+    "question": "Seorang wanita berusia 22 tahun datang berobat dengan keluhan mencret 7 kali sejak tadi pagi. Mencret dengan konsistensi air muncrat dan perut gembung. Perut terasa tidak nyaman setelah makan di warung. Dicurigai diare yang disebabkan oleh infeksi bakteri. Apakah bakteri yang menginfeksi pasien tersebut?",
+    "options": [
+      "E. coli",
+      "Clostridium tetani",
+      "Shigella dysentriae",
+      "Salmonella",
+      "Herpes virus"
+    ],
+    "answer": "E. coli"
+  },
+  {
+    "question": "Seorang laki-laki berusia 60 tahun datang ke poli RS dengan keluhan massa yang keluar dari anus sejak 8 tahun. Massa semakin besar dan tidak masuk setelah BAB. Permukaan massa merah mengkilap dan lembab. Apa diagnosa yang paling mungkin?",
+    "options": [
+      "Hemoroid grade 3-4",
+      "Prolaps rekti",
+      "Proktitis",
+      "Intususepsi",
+      "Karsinoma rekti"
+    ],
+    "answer": "Prolaps rekti"
+  }
+];
+
+// =================== APP LOGIC ===================
+(function(){
+  // State
+  var pool = [];
+  var cur = 0;
+  var answers = [];   // null | string
+  var showExp = true;
+  var isAnswered = false;
+
+  // Dedup questions by text
+  var seen = {};
+  var uniqueQ = [];
+  questions.forEach(function(q){
+    var k = q.question.trim().toLowerCase();
+    if(!seen[k]){ seen[k]=true; uniqueQ.push(q); }
+  });
+
+  // DOM helpers
+  function ge(id){ return document.getElementById(id); }
+  function qsa(sel){ return document.querySelectorAll(sel); }
+
+  // ---- Screen management ----
+  function showScreen(id){
+    var screens = ['startScreen','quizScreen','resultScreen','reviewScreen'];
+    screens.forEach(function(s){
+      var el = ge(s);
+      el.classList.remove('active');
+      el.style.display = 'none';
+    });
+    var target = ge(id);
+    target.style.display = 'flex';
+    target.classList.add('active');
+    window.scrollTo(0,0);
+  }
+
+  // ---- Shuffle ----
+  function shuffle(arr){
+    var a = arr.slice();
+    for(var i=a.length-1;i>0;i--){
+      var j=Math.floor(Math.random()*(i+1));
+      var t=a[i]; a[i]=a[j]; a[j]=t;
+    }
+    return a;
+  }
+
+  // ---- Init ----
+  window.addEventListener('load', function(){
+    ge('totalLbl').textContent = uniqueQ.length + ' soal tersedia';
+
+    ge('chkExplain').addEventListener('change', function(){
+      ge('explainLbl').textContent = this.checked ? 'Aktif' : 'Nonaktif';
+    });
+
+    ge('btnStart').addEventListener('click', startQuiz);
+    ge('btnPrev').addEventListener('click', function(){ goTo(cur-1); });
+    ge('btnNext').addEventListener('click', function(){
+      if(cur < pool.length-1) goTo(cur+1);
+      else showResult();
+    });
+
+    ge('btnMenu').addEventListener('click', openMenu);
+    ge('btnCloseMenu').addEventListener('click', closeMenu);
+    ge('overlay').addEventListener('click', closeMenu);
+    ge('btnFinish').addEventListener('click', function(){ closeMenu(); showResult(); });
+
+    ge('btnReview').addEventListener('click', openReview);
+    ge('btnRestart').addEventListener('click', function(){ showScreen('startScreen'); });
+    ge('btnBackRev').addEventListener('click', function(){ showScreen('resultScreen'); });
+
+    qsa('.f-btn').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        qsa('.f-btn').forEach(function(b){ b.classList.remove('active'); });
+        btn.classList.add('active');
+        buildReview(btn.getAttribute('data-f'));
+      });
+    });
+
+    // Show start screen properly
+    showScreen('startScreen');
+  });
+
+  // ---- Start Quiz ----
+  function startQuiz(){
+    showExp = ge('chkExplain').checked;
+    var mode = ge('modeSelect').value;
+
+    var base = uniqueQ.slice();
+    if(mode==='seq'){
+      pool = base;
+    } else if(mode==='all'){
+      pool = shuffle(base);
+    } else {
+      var n = parseInt(mode);
+      pool = shuffle(base).slice(0, Math.min(n, base.length));
+    }
+
+    answers = [];
+    for(var i=0;i<pool.length;i++) answers.push(null);
+    cur = 0;
+
+    showScreen('quizScreen');
+    renderQ();
+  }
+
+  // ---- Render Question ----
+  function renderQ(){
+    var q = pool[cur];
+    isAnswered = answers[cur] !== null;
+    var ua = answers[cur];
+
+    // Progress
+    var pct = Math.round(((cur+1)/pool.length)*100);
+    ge('pbFill').style.width = pct+'%';
+    ge('progTxt').textContent = (cur+1)+' / '+pool.length;
+
+    // Score
+    var sc = 0;
+    for(var i=0;i<answers.length;i++){
+      if(answers[i] !== null && answers[i] === pool[i].answer) sc++;
+    }
+    ge('scoreNum').textContent = sc;
+
+    // Question text
+    ge('qNum').textContent = 'Soal '+(cur+1);
+    ge('qTxt').textContent = q.question;
+
+    // Options
+    var grid = ge('optsGrid');
+    grid.innerHTML = '';
+    var labels = ['A','B','C','D','E','F'];
+
+    q.options.forEach(function(opt, i){
+      var btn = document.createElement('button');
+      btn.className = 'opt-btn';
+      if(isAnswered) btn.disabled = true;
+
+      var lbl = document.createElement('span');
+      lbl.className = 'opt-lbl';
+      lbl.textContent = labels[i] || String(i+1);
+
+      var txt = document.createElement('span');
+      txt.textContent = opt;
+      txt.style.flex = '1';
+
+      btn.appendChild(lbl);
+      btn.appendChild(txt);
+
+      if(isAnswered){
+        if(opt === q.answer){
+          btn.classList.add(ua === opt ? 'correct' : 'highlight');
+        } else if(opt === ua){
+          btn.classList.add('wrong');
+        }
+      }
+
+      btn.addEventListener('click', function(){ selectAnswer(opt); });
+      grid.appendChild(btn);
+    });
+
+    // Explanation
+    var ep = ge('expPanel');
+    ep.style.display = 'none';
+    ep.className = 'exp-panel';
+
+    if(isAnswered && showExp){
+      var ok = ua === q.answer;
+      ep.style.display = 'block';
+      ep.classList.add(ok ? 'is-ok' : 'is-bad');
+      ge('expIcon').textContent = ok ? '✅' : '❌';
+      ge('expTitle').textContent = ok ? ' Jawaban Benar!' : ' Jawaban Salah!';
+      ge('expBody').textContent = 'Jawaban yang benar: ' + q.answer;
+    }
+
+    // Buttons
+    ge('btnPrev').disabled = (cur === 0);
+    ge('btnNext').textContent = (cur === pool.length-1) ? '🏁 Selesai' : 'Selanjutnya ›';
+
+    buildDots();
+    buildSideGrid();
+  }
+
+  // ---- Select Answer ----
+  function selectAnswer(opt){
+    if(isAnswered) return;
+    answers[cur] = opt;
+    isAnswered = true;
+    renderQ();
+  }
+
+  // ---- Navigate ----
+  function goTo(idx){
+    if(idx < 0 || idx >= pool.length) return;
+    cur = idx;
+    var card = ge('qCard');
+    card.style.animation = 'none';
+    setTimeout(function(){
+      card.style.animation = '';
+      renderQ();
+    }, 10);
+  }
+
+  // ---- Dots ----
+  function buildDots(){
+    var nav = ge('dotNav');
+    nav.innerHTML = '';
+    var total = pool.length;
+    var maxD = 11;
+    var start = Math.max(0, cur - Math.floor(maxD/2));
+    var end = Math.min(total, start + maxD);
+    if(end - start < maxD) start = Math.max(0, end - maxD);
+
+    for(var i=start;i<end;i++){
+      var d = document.createElement('div');
+      d.className = 'dot';
+      if(i===cur) d.classList.add('cur');
+      else if(answers[i]!==null){
+        d.classList.add(answers[i]===pool[i].answer ? 'ok' : 'bad');
+      }
+      (function(idx){ d.addEventListener('click', function(){ goTo(idx); }); })(i);
+      nav.appendChild(d);
+    }
+  }
+
+  // ---- Side Grid ----
+  function buildSideGrid(){
+    var g = ge('sideGrid');
+    g.innerHTML = '';
+    pool.forEach(function(q, i){
+      var btn = document.createElement('button');
+      btn.className = 'sn';
+      btn.textContent = i+1;
+      if(i===cur) btn.classList.add('cur');
+      else if(answers[i]!==null){
+        btn.classList.add(answers[i]===pool[i].answer ? 'ok' : 'bad');
+      }
+      (function(idx){ btn.addEventListener('click', function(){ closeMenu(); goTo(idx); }); })(i);
+      g.appendChild(btn);
+    });
+  }
+
+  // ---- Menu ----
+  function openMenu(){
+    buildSideGrid();
+    ge('sideMenu').classList.add('open');
+    ge('overlay').classList.add('vis');
+  }
+  function closeMenu(){
+    ge('sideMenu').classList.remove('open');
+    ge('overlay').classList.remove('vis');
+  }
+
+  // ---- Result ----
+  function showResult(){
+    var total = pool.length;
+    var correct = 0, skipped = 0;
+    answers.forEach(function(a,i){
+      if(a===null) skipped++;
+      else if(a===pool[i].answer) correct++;
+    });
+    var wrong = total - correct - skipped;
+    var pct = Math.round((correct/total)*100);
+
+    var trophy='🥉', title='Terus Berlatih!';
+    if(pct>=90){ trophy='🏆'; title='Luar Biasa! Sempurna!'; }
+    else if(pct>=75){ trophy='🥇'; title='Hebat! Nilai Bagus!'; }
+    else if(pct>=60){ trophy='🥈'; title='Cukup Baik! Tingkatkan Lagi!'; }
+
+    ge('trophy').textContent = trophy;
+    ge('resTitle').textContent = title;
+    ge('resSub').textContent = 'Kamu menjawab '+correct+' dari '+total+' soal dengan benar.';
+    ge('ringNum').textContent = pct+'%';
+    ge('stOk').textContent = correct;
+    ge('stBad').textContent = wrong;
+    ge('stSkip').textContent = skipped;
+
+    showScreen('resultScreen');
+
+    // Animate ring
+    setTimeout(function(){
+      var offset = 314 - (pct/100)*314;
+      var ring = ge('ringFg');
+      ring.style.strokeDashoffset = offset;
+      if(pct>=75) ring.style.stroke='#16a34a';
+      else if(pct>=50) ring.style.stroke='#d97706';
+      else ring.style.stroke='#dc2626';
+    }, 100);
+  }
+
+  // ---- Review ----
+  function openReview(){
+    showScreen('reviewScreen');
+    qsa('.f-btn').forEach(function(b){ b.classList.remove('active'); });
+    document.querySelector('[data-f="all"]').classList.add('active');
+    buildReview('all');
+  }
+
+  function buildReview(filter){
+    var list = ge('revList');
+    list.innerHTML = '';
+    var labels = ['A','B','C','D','E','F'];
+
+    pool.forEach(function(q, i){
+      var ua = answers[i];
+      var isOk = ua === q.answer;
+      var isSkip = ua === null;
+      var status = isSkip ? 'skip' : (isOk ? 'ok' : 'bad');
+
+      if(filter==='ok' && status!=='ok') return;
+      if(filter==='bad' && status!=='bad') return;
+      if(filter==='skip' && status!=='skip') return;
+
+      var item = document.createElement('div');
+      item.className = 'rev-item '+status;
+
+      var badge = status==='ok' ? '✅ Benar' : status==='bad' ? '❌ Salah' : '⏭ Dilewati';
+
+      var optsHTML = q.options.map(function(opt, oi){
+        var cls = '';
+        if(opt===q.answer) cls='is-ans';
+        else if(opt===ua) cls='is-wrong';
+        return '<div class="rev-opt '+cls+'">'
+          +'<span class="rev-opt-lbl">'+(labels[oi]||oi+1)+'</span>'
+          +'<span>'+escHtml(opt)+'</span>'
+          +'</div>';
+      }).join('');
+
+      item.innerHTML =
+        '<div class="rev-head" data-open="0">'
+          +'<span class="rev-qn">#'+(i+1)+'</span>'
+          +'<span class="rev-badge">'+badge+'</span>'
+          +'<span class="rev-qt">'+escHtml(q.question)+'</span>'
+          +'<span class="rev-chev">▼</span>'
+        +'</div>'
+        +'<div class="rev-body">'
+          +'<p class="rev-full">'+escHtml(q.question)+'</p>'
+          +'<div class="rev-opts">'+optsHTML+'</div>'
+        +'</div>';
+
+      var head = item.querySelector('.rev-head');
+      var body = item.querySelector('.rev-body');
+      head.addEventListener('click', function(){
+        var isOpen = head.getAttribute('data-open')==='1';
+        head.setAttribute('data-open', isOpen?'0':'1');
+        if(isOpen){ head.classList.remove('open'); body.classList.remove('open'); }
+        else { head.classList.add('open'); body.classList.add('open'); }
+      });
+
+      list.appendChild(item);
+    });
+
+    if(list.children.length===0){
+      list.innerHTML='<p style="text-align:center;color:#94a3b8;padding:48px 0">Tidak ada soal di kategori ini.</p>';
+    }
+  }
+
+  function escHtml(s){
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+})();
+</script>
+</body>
+</html>
